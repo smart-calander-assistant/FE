@@ -48,14 +48,12 @@ export default App;
 const RootContainer = styled.div`
     display: flex;
     max-height: 100vh;
-    background-color: #e9e9e9;
     flex: 1;
 `;
 
 const OutterContainer = styled.div`
     display: flex;
     max-height: 100vh;
-    background-color: #e9e9e9;
     justify-content: center;
     margin: 0 auto;
     flex: 1;
@@ -63,6 +61,6 @@ const OutterContainer = styled.div`
 
 const InnerContainer = styled.div`
     max-width: 100wh;
-    background-color: white;
+    background-color: #f5f5f5;
     flex: 1;
 `;

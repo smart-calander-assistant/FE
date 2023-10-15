@@ -8,6 +8,6 @@ export default function BorderLine() {
 
 const BorderLineContainer = styled.div`
     height: 0.1rem;
-    margin: 0 1rem;
-    background-color: gray;
+    margin: 0.5rem 0;
+    background-color: #E0E5ED;
 `;

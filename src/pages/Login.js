@@ -141,7 +141,7 @@ export default function Login() {
 }
 
 const LoginContainer = styled.div`
-    background-color: #cae9ff;
+    background-color: #0acf83;
     height: 100vh;
     display: flex;
     align-items: center;
