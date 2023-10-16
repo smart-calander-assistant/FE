@@ -7,7 +7,7 @@ import Register from '../mordal/Register';
 import requests from '../api/requests';
 
 export default function Login() {
-    const [id, setId] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginEnabled, setLoginEnabled] = useState(false);
     const [isEncrypted, setIsEncrypted] = useState(true);
@@ -18,21 +18,21 @@ export default function Login() {
     };
     // ID입력
     const handleIdChange = (event) => {
-        const newId = event.target.value;
-        setId(newId);
-        checkLoginConditions(newId, password);
+        const newEmail = event.target.value;
+        setEmail(newEmail);
+        checkLoginConditions(newEmail, password);
     };
 
     // Password입력
     const handlePasswordChange = (event) => {
         const newPassword = event.target.value;
         setPassword(newPassword);
-        checkLoginConditions(id, newPassword);
+        checkLoginConditions(email, newPassword);
     };
 
     // 간단한 로그인조건 (향후 추가가능)
-    const checkLoginConditions = (id, pwd) => {
-        if (id.length > 0 && pwd.length >= 4) {
+    const checkLoginConditions = (email, pwd) => {
+        if (email.length > 0 && pwd.length >= 4) {
             setLoginEnabled(true);
         } else {
             setLoginEnabled(false);
@@ -48,14 +48,14 @@ export default function Login() {
     const handleLogin = async () => {
         try {
             const response = await axios.post(requests.fetchLogin, {
-                id,
+                email,
                 password,
             });
-
-            if (response.data.isSuccess) {
+            console.log(response.data)
+            if (response.data) {
                 console.log('로그인 성공');
             } else {
-                console.log('로그인 실패:', response.data.message);
+                console.log('로그인 실패:', response.data);
             }
         } catch (error) {
             console.error('로그인 오류:', error);
@@ -89,7 +89,7 @@ export default function Login() {
                     />
                 </ImageContainer>
                 <IdContainer
-                    value={id}
+                    value={email}
                     onChange={handleIdChange}
                     placeholder={'아이디'}
                 />

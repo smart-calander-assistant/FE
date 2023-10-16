@@ -22,10 +22,10 @@ export default function Register({ setRegisterModalOpen }) {
                 password,
             });
 
-            if (response.data.isSuccess) {
+            if (response.data.email) {
                 console.log('회원가입 성공');
             } else {
-                console.log('회원가입 실패:', response.data.message);
+                console.log('회원가입 실패:', response.data);
             }
         } catch (error) {
             console.error('회원가입 오류:', error);
