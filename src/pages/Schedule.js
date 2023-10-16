@@ -1,52 +1,52 @@
-import React from 'react'
-import Footer from '../component/Footer'
-import styled from 'styled-components'
-import Header from '../component/Header'
-import ScheduleContent from '../component/ScheduleContent'
-import { IoDesktop, IoDesktopOutline } from 'react-icons/io5'
-
+import React from 'react';
+import Footer from '../component/Footer';
+import styled from 'styled-components';
+import Header from '../component/Header';
+import ScheduleContent from '../component/ScheduleContent';
+import { IoDesktop, IoDesktopOutline } from 'react-icons/io5';
+import DayCard from '../component/DayCard';
 
 export default function Schedule() {
-  return (
-    <RootContainer>
-        <Header label={'일정'}/>
-        <DateContainer>
-            10월 9일
-            <IconContainer>
-                <IoDesktopOutline size={'1.5rem'} />
-            </IconContainer>
-        </DateContainer>
-        <ContentWrapper>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-            <ScheduleContent start_time={'13:00'} end_time={'14:00'} title={'점심'} place={'중앙대학교'}/>
-        </ContentWrapper>
-        <Footer label={'schedule'} />
-    </RootContainer>
-  )
-}
+    const dayList = [
+        { day: '월', date: 18 },
+        { day: '화', date: 19 },
+        { day: '수', date: 20 },
+        { day: '목', date: 21 },
+        { day: '금', date: 22 },
+        { day: '토', date: 23 },
+        { day: '일', date: 24 },
+    ];
 
+    return (
+        <RootContainer>
+            <Header label={'일정 확인'} />
+            <ContentWrapper>
+                <DayContainer>
+                    {dayList.map((item, index) => (
+                        <DayCard
+                            day={item.day}
+                            date={item.date}
+                            index={index}
+                        />
+                    ))}
+                </DayContainer>
+            </ContentWrapper>
+            <Footer label={'schedule'} />
+        </RootContainer>
+    );
+}
 
 const RootContainer = styled.div`
     display: flex;
     flex-direction: column;
     height: 100vh;
-
 `;
 
-const DateContainer = styled.div`
+const DayContainer = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    background-color: #62B6CB;
-    padding: 1rem;
-
-    font-size: larger;
+    padding: 0.5rem;
 `;
 
 const IconContainer = styled.div`

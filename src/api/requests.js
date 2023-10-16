@@ -1,7 +1,7 @@
 const requests = {
-    fetchLogin: 'api/members/login',
-    fetchLogout: 'api/members/logout',
-    fetchRegister: 'api/members/register',
+    fetchLogin: 'api/auth/login',
+    fetchLogout: 'api/auth/logout',
+    fetchSignup: 'api/auth/signup',
 };
 
 export default requests;

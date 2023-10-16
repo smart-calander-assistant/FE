@@ -194,7 +194,7 @@ const LoginButton = styled.button`
     text-align: center;
     font-weight: 100;
     color: ${({ enabled }) => (enabled ? 'white' : 'gray')};
-    background-color: ${({ enabled }) => (enabled ? '#5FA8D3' : 'white')};
+    background-color: ${({ enabled }) => (enabled ? '#3A86FF' : 'white')};
     cursor: ${({ enabled }) => (enabled ? 'pointer' : 'default')};
 
     &:active {

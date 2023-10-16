@@ -9,7 +9,7 @@ import Setting from './pages/Setting';
 import Schedule from './pages/Schedule';
 
 function App() {
-    const [isLogined, setIsLogined] = useState(true);
+    const [isLogined, setIsLogined] = useState(false);
 
     // 로그인이 안된경우 로그인페이지
     if (!isLogined) {
@@ -55,6 +55,7 @@ const OutterContainer = styled.div`
     display: flex;
     max-height: 100vh;
     justify-content: center;
+    background-color: #f5f5f5;
     margin: 0 auto;
     flex: 1;
 `;

@@ -27,42 +27,42 @@ export default function Todoplan() {
         {
             id: 1,
             title: 'Task 1',
-            deadline: '2023-10-10:20:00',
+            deadline: '10-10:20:00',
             priority: 3,
             place: '중앙대학교',
         },
         {
             id: 2,
             title: 'Task 2',
-            deadline: '2023-10-10:20:00',
+            deadline: '10-10:20:00',
             priority: 3,
             place: '중앙대학교',
         },
         {
             id: 3,
             title: 'Task 3',
-            deadline: '2023-10-10:20:00',
+            deadline: '10-10:20:00',
             priority: 3,
             place: '중앙대학교',
         },
         {
             id: 4,
             title: 'Task 4',
-            deadline: '2023-10-10:20:00',
+            deadline: '10-10:20:00',
             priority: 3,
             place: '중앙대학교',
         },
         {
             id: 5,
             title: 'Task 5',
-            deadline: '2023-10-10:20:00',
+            deadline: '10-10:20:00',
             priority: 3,
             place: '중앙대학교',
         },
         {
             id: 6,
             title: 'Task 6',
-            deadline: '2023-10-10:20:00',
+            deadline: '10-10:20:00',
             priority: 3,
             place: '중앙대학교',
         },
@@ -72,43 +72,43 @@ export default function Todoplan() {
         {
             id: 1,
             title: 'Plan 1',
-            start_time: '2023-10-10:20:00',
-            end_time: '2023-10-10:22:00',
+            start_time: '10-10:20:00',
+            end_time: '10-10:22:00',
             place: '중앙대학교',
         },
         {
             id: 2,
             title: 'Plan 2',
-            start_time: '2023-10-10:20:00',
-            end_time: '2023-10-10:22:00',
+            start_time: '10-10:20:00',
+            end_time: '10-10:22:00',
             place: '중앙대학교',
         },
         {
             id: 3,
             title: 'Plan 3',
-            start_time: '2023-10-10:20:00',
-            end_time: '2023-10-10:22:00',
+            start_time: '10-10:20:00',
+            end_time: '10-10:22:00',
             place: '중앙대학교',
         },
         {
             id: 4,
             title: 'Plan 4',
-            start_time: '2023-10-10:20:00',
-            end_time: '2023-10-10:22:00',
+            start_time: '10-10:20:00',
+            end_time: '10-10:22:00',
             place: '중앙대학교',
         },
         {
             id: 5,
             title: 'Plan 5',
-            start_time: '2023-10-10:20:00',
-            end_time: '2023-10-10:22:00',
+            start_time: '10-10:20:00',
+            end_time: '10-10:22:00',
             place: '중앙대학교',
         },
         {
             id: 6,
             title: 'Plan 6',
-            start_time: '2023-10-10:20:00',
-            end_time: '2023-10-10:22:00',
+            start_time: '10-10:20:00',
+            end_time: '10-10:22:00',
             place: '중앙대학교',
         },
     ];
@@ -179,7 +179,7 @@ const ContentWrapper = styled.div`
         border-radius: 1rem;
     } */
     &::-webkit-scrollbar-track {
-        background-color: white;
+        background-color: #f5f5f5;
     }
 `;
 

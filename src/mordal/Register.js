@@ -17,7 +17,7 @@ export default function Register({ setRegisterModalOpen }) {
 
     const handleRegister = async () => {
         try {
-            const response = await axios.post(requests.fetchRegister, {
+            const response = await axios.post(requests.fetchSignup, {
                 email,
                 password,
             });
