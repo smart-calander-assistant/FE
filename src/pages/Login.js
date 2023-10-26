@@ -6,7 +6,7 @@ import axios from '../api/axios';
 import Register from '../mordal/Register';
 import requests from '../api/requests';
 
-export default function Login() {
+function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginEnabled, setLoginEnabled] = useState(false);
@@ -51,7 +51,7 @@ export default function Login() {
                 email,
                 password,
             });
-            console.log(response.data)
+
             if (response.data) {
                 console.log('로그인 성공');
             } else {
@@ -66,10 +66,10 @@ export default function Login() {
         try {
             const response = await axios.get(requests.fetchLogout);
 
-            if (response.data.isSuccess) {
+            if (response.data) {
                 console.log('로그아웃 성공');
             } else {
-                console.log('로그아웃 실패:', response.data.message);
+                console.log('로그아웃 실패:', response.data);
             }
         } catch (error) {
             console.error('로그아웃 오류:', error);
@@ -121,7 +121,7 @@ export default function Login() {
                 </EncryptedIconContainer>
                 <LoginButton
                     enabled={loginEnabled}
-                    onClick={({ id, password }) => handleLogin()}
+                    onClick={({ email, password }) => handleLogin()}
                 >
                     로그인
                 </LoginButton>
@@ -139,6 +139,9 @@ export default function Login() {
         </LoginContainer>
     );
 }
+
+export default Login;
+
 
 const LoginContainer = styled.div`
     background-color: #0acf83;

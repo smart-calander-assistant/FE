@@ -116,21 +116,21 @@ export default function Todoplan() {
     return (
         <RootContainer>
             <Header label={'해야할 일'} />
-            <ContentWrapper>
-                <TodoPlanContainer>
-                    <TypeBox
-                        onClick={() => handleShowTodoList()}
-                        active={showTodoList}
-                    >
-                        Todo List
-                    </TypeBox>
-                    <TypeBox
-                        onClick={() => handleShowPlannedList()}
-                        active={showPlannedList}
-                    >
-                        Planned List
-                    </TypeBox>
-                </TodoPlanContainer>
+            <TodoPlanContainer>
+                <TypeBox
+                    onClick={() => handleShowTodoList()}
+                    active={showTodoList}
+                >
+                    Todo List
+                </TypeBox>
+                <TypeBox
+                    onClick={() => handleShowPlannedList()}
+                    active={showPlannedList}
+                >
+                    Planned List
+                </TypeBox>
+            </TodoPlanContainer>
+            <ContentWrapper active={showTodoList}>
                 {showTodoList
                     ? todoItems.map((item) => (
                           <TodoCard
@@ -174,10 +174,12 @@ const ContentWrapper = styled.div`
     &::-webkit-scrollbar {
         width: 5px;
     }
-    /* &::-webkit-scrollbar-thumb {
-        background-color: gray;
+
+    &::-webkit-scrollbar-thumb {
+        background-color: ${(props) => (props.active ? '#de496e' : '#0acf83')};
         border-radius: 1rem;
-    } */
+    }
+    
     &::-webkit-scrollbar-track {
         background-color: #f5f5f5;
     }
@@ -194,6 +196,7 @@ const TypeBox = styled.div`
     align-items: center;
     justify-content: center;
     background-color: #3a86ff;
-    opacity: ${(props) => (props.active ? '0.5' : '1')};
+    opacity: ${(props) => (props.active ? '0.7' : '1')};
+    color: ${(props) => (props.active ? 'white' : 'black')};
     padding: 1rem;
 `;

@@ -12,7 +12,6 @@ export default Header;
 
 const HeaderContainer = styled.div`
     font-size: x-large;
-    font-weight: 600;
 
     margin: 1rem;
 `

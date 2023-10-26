@@ -9,38 +9,28 @@ import Setting from './pages/Setting';
 import Schedule from './pages/Schedule';
 
 function App() {
-    const [isLogined, setIsLogined] = useState(false);
+    const [isLogined, setIsLogined] = useState(true);
 
-    // 로그인이 안된경우 로그인페이지
-    if (!isLogined) {
-        return (
-            <RootContainer>
-                <OutterContainer>
-                    <InnerContainer>
+    return (
+        <RootContainer>
+            <OutterContainer>
+                <InnerContainer>
+                    {!isLogined ? (
                         <Routes>
                             <Route path='/' element={<Login />} />
                         </Routes>
-                    </InnerContainer>
-                </OutterContainer>
-            </RootContainer>
-        );
-    }
-    else {
-        return (
-            <RootContainer>
-                <OutterContainer>
-                    <InnerContainer>
-                    <Routes>
-                      <Route path="/calendar" element={<Calendar />} />
-                      <Route path="/todoplan" element={<Todoplan />} />
-                      <Route path="/schedule" element={<Schedule />} />
-                      <Route path="/setting" element={<Setting />} />
-                    </Routes>
-                    </InnerContainer>
-                </OutterContainer>
-            </RootContainer>
-        );
-    }
+                    ) : (
+                        <Routes>
+                            <Route path='/calendar' element={<Calendar />} />
+                            <Route path='/todoplan' element={<Todoplan />} />
+                            <Route path='/schedule' element={<Schedule />} />
+                            <Route path='/setting' element={<Setting />} />
+                        </Routes>
+                    )}
+                </InnerContainer>
+            </OutterContainer>
+        </RootContainer>
+    );
 }
 
 export default App;

@@ -1,55 +1,53 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
 
-const ScheduleContent = ( {start_time, end_time, title, place, } ) => {
-  return (
-    <RootContainer>
-        <TimeContainer>
-            <p>{start_time}</p>
-            <p style={{display: 'flex', justifyContent: 'center'}}>~</p>
-            <p>{end_time}</p>
-        </TimeContainer>
-        <BorderLineContainer />
-        <ScheduleContainer>
-            <TitleBox>{title}</TitleBox>
-            <p>{place}</p>
-        </ScheduleContainer>
-    </RootContainer>
+const ScheduleContent = ({ title, place, start_time, end_time }) => {
+    const startTime = start_time.split(':').map(Number);
+    const endTime = end_time.split(':').map(Number);
 
-  )
-}
+    let time;
+    if (
+        endTime[0] < startTime[0] ||
+        (endTime[0] === startTime[0] && endTime[1] < startTime[1])
+    ) {
+        time =
+            (24 - startTime[0] + endTime[0]) * 60 - startTime[1] + endTime[1];
+    } else {
+        time =
+            (endTime[0] - startTime[0]) * 60 + (endTime[1] - startTime[1]);
+    }
+    return (
+        <RootContainer height={time}>
+            <ScheduleContainer>
+                <TitleBox>
+                    <p>{title}</p>
+                    <p>{place}</p>
+                </TitleBox>
+            </ScheduleContainer>
+        </RootContainer>
+    );
+};
 
 export default ScheduleContent;
 
 
 const RootContainer = styled.div`
     display: flex;
-    margin: 1rem;
+    margin: 0.5rem;
     padding: 1rem;
-    background-color: #bee9e8;
+    background-color: #de496e;
     border-radius: 1rem;
-`
-
-const TimeContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-
-    font-size: large;
-    font-weight: 500;
-`
-const BorderLineContainer = styled.div`
-    width: 0.1rem;
-    margin: 0 1rem;
-    background-color: #1b4965;
-`
+    width: 100%;
+    height: ${(props) => props.height / 30}rem;
+`;
 
 const ScheduleContainer = styled.div`
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-`
+`;
 
 const TitleBox = styled.p`
-    font-size: larger;
-    font-weight: 500;
-`
+    display: flex;
+    flex-direction: column;
+    color: white;
+    justify-content: space-between;
+`;
