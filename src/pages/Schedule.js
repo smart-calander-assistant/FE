@@ -6,6 +6,7 @@ import ScheduleContent from '../component/ScheduleContent';
 import { IoDesktop, IoDesktopOutline } from 'react-icons/io5';
 import DayCard from '../component/DayCard';
 import TransfortationContent from '../component/TransfortationContent';
+import TimeTable from '../component/TimeTable';
 
 export default function Schedule() {
     const dayList = [
@@ -60,8 +61,6 @@ export default function Schedule() {
     const startTime = '08:00';
     const endTime = '22:00';
 
-    const timeSlotList = generateTimeSlots(startTime, endTime, 60); // 1시간 간격으로 생성
-
     return (
         <RootContainer>
             <Header label={'일정 확인'} />
@@ -71,55 +70,55 @@ export default function Schedule() {
                 ))}
             </DayContainer>
             <ContentWrapper>
-                <TimeContainer>
-                    {timeSlotList.map((timeSlot, index) => (
-                        <TimeSlot key={index}>{timeSlot}</TimeSlot>
-                    ))}
-                </TimeContainer>
-                <ScheduleContainer>
-                {scheduleList.map((item) =>
-                    item.type === 'schedule' ? (
-                        <ScheduleContent
-                            title={item.title}
-                            place={item.place}
-                            start_time={item.start_time}
-                            end_time={item.end_time}
-                        />
-                    ) : (
-                        <TransfortationContent
-                            time={item.time}
-                            type={item.type}
-                        />
-                    )
-                )}
+            <ScheduleContainer>
+                    {scheduleList.map((item, index) => {
+                        let time_diff;
+                        if (index < scheduleList.length - 1) {
+                            const nextStartTime = scheduleList[index + 1].start_time;
+                            time_diff = calculateTimeDifference(item.end_time, nextStartTime);
+                        } else {
+                            time_diff = 0;
+                        }
+
+                        if (item.type === 'schedule') {
+                            return (
+                                <ScheduleContent
+                                    key={index}
+                                    title={item.title}
+                                    place={item.place}
+                                    start_time={item.start_time}
+                                    end_time={item.end_time}
+                                    margin={time_diff}
+                                />
+                            );
+                        } else {
+                            return (
+                                <TransfortationContent
+                                    key={index}
+                                    time={item.time}
+                                    type={item.type}
+                                    start_time={item.start_time}
+                                    end_time={item.end_time}
+                                    margin={time_diff}
+                                />
+                            );
+                        }
+                    })}
                 </ScheduleContainer>
+                {/* <TimeTable startTime={startTime} endTime={endTime} timeInterval={60} scheduleList={scheduleList}/> */}
             </ContentWrapper>
             <Footer label={'schedule'} />
         </RootContainer>
     );
 }
 
-function generateTimeSlots(startTime, endTime, step) {
-    const timeSlots = [];
-    let currentTime = startTime;
-
-    while (currentTime <= endTime) {
-        timeSlots.push(currentTime);
-        currentTime = addMinutes(currentTime, step);
-    }
-
-    return timeSlots;
-}
-
-function addMinutes(time, minutes) {
-    const [hours, mins] = time.split(':').map(Number);
-    const totalMinutes = hours * 60 + mins + minutes;
-    const newHours = Math.floor(totalMinutes / 60);
-    const newMinutes = totalMinutes % 60;
-    return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(
-        2,
-        '0'
-    )}`;
+function calculateTimeDifference(startTime, endTime) {
+    // 시간을 분으로 변환한 다음 차이 계산
+    const startTimeParts = startTime.split(':').map(Number);
+    const endTimeParts = endTime.split(':').map(Number);
+    const startMinutes = startTimeParts[0] * 60 + startTimeParts[1];
+    const endMinutes = endTimeParts[0] * 60 + endTimeParts[1];
+    return endMinutes - startMinutes;
 }
 
 const RootContainer = styled.div`
@@ -158,16 +157,7 @@ const ContentWrapper = styled.div`
 
 const ScheduleContainer = styled.div`
     display: flex;
+    flex: 1;
     flex-direction: column;
-`;
-
-const TimeContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 0 1rem;
-    gap: 2rem;
-`;
-
-const TimeSlot = styled.div`
-    color: gray;
+    /* gap: 1rem; */
 `;
