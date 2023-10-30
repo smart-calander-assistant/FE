@@ -115,7 +115,7 @@ export default function Todoplan() {
 
     return (
         <RootContainer>
-            <Header label={'해야할 일'} />
+            <Header label={'해야할 일'} TodoList={showTodoList}/>
             <TodoPlanContainer>
                 <TypeBox
                     onClick={() => handleShowTodoList()}

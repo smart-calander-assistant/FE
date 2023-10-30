@@ -132,6 +132,7 @@ const DayContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
+    margin-bottom: 0.5rem;
 `;
 
 const ContentWrapper = styled.div`
