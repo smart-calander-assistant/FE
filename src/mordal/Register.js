@@ -1,7 +1,6 @@
 import axios from '../api/axios';
 import React, { useRef, useState } from 'react';
 import useOnClickOutside from '../hooks/useOnClickOutside';
-import './AddFriend.css';
 import { styled } from 'styled-components';
 import requests from '../api/requests';
 

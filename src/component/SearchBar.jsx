@@ -16,7 +16,6 @@ const SearchBar = ({ handleSubmit, value, setValue, placeholder }) => {
                 onChange={handleChange}
                 placeholder={placeholder}
             />
-            <SubmitBox type='submit' value='입력' />
         </SearchContainer>
     );
 };

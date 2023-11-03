@@ -7,8 +7,11 @@ import {
     IoEllipsisHorizontalSharp,
 } from 'react-icons/io5';
 import BorderLine from './BorderLine';
+import { useTodoContext, ADD_PLANNED_ITEM } from '../context/TodoContext';
 
 const PlanCard = ({ id, start_time, end_time, place, title }) => {
+    const { dispatch } = useTodoContext();
+    
     return (
         <TodoContainer>
             <HeaderBox>

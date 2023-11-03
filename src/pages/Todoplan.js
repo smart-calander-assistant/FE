@@ -1,159 +1,53 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Footer from '../component/Footer';
 import styled from 'styled-components';
 import Header from '../component/Header';
 import TodoCard from '../component/TodoCard';
 import PlanCard from '../component/PlanCard';
+import { useTodoContext, SHOW_TODO_LIST, SHOW_PLANNED_LIST } from '../context/TodoContext';
 
 export default function Todoplan() {
-    const [showTodoList, setShowTodoList] = useState(true);
-    const [showPlannedList, setShowPlannedList] = useState(false);
+  const { state, dispatch } = useTodoContext();
+  const { showTodoList, showPlannedList } = state;
 
-    const handleShowTodoList = () => {
-        if (!showTodoList) {
-            setShowPlannedList(false);
-            setShowTodoList(true);
-        }
-    };
+  const todoItems = state.todoItems;
+  const plannedItems = state.plannedItems;
 
-    const handleShowPlannedList = () => {
-        if (!showPlannedList) {
-            setShowPlannedList(true);
-            setShowTodoList(false);
-        }
-    };
-
-    const todoItems = [
-        {
-            id: 1,
-            title: 'Task 1',
-            deadline: '10-10:20:00',
-            priority: 3,
-            place: '중앙대학교',
-        },
-        {
-            id: 2,
-            title: 'Task 2',
-            deadline: '10-10:20:00',
-            priority: 3,
-            place: '중앙대학교',
-        },
-        {
-            id: 3,
-            title: 'Task 3',
-            deadline: '10-10:20:00',
-            priority: 3,
-            place: '중앙대학교',
-        },
-        {
-            id: 4,
-            title: 'Task 4',
-            deadline: '10-10:20:00',
-            priority: 3,
-            place: '중앙대학교',
-        },
-        {
-            id: 5,
-            title: 'Task 5',
-            deadline: '10-10:20:00',
-            priority: 3,
-            place: '중앙대학교',
-        },
-        {
-            id: 6,
-            title: 'Task 6',
-            deadline: '10-10:20:00',
-            priority: 3,
-            place: '중앙대학교',
-        },
-    ];
-
-    const plannedItems = [
-        {
-            id: 1,
-            title: 'Plan 1',
-            start_time: '10-10:20:00',
-            end_time: '10-10:22:00',
-            place: '중앙대학교',
-        },
-        {
-            id: 2,
-            title: 'Plan 2',
-            start_time: '10-10:20:00',
-            end_time: '10-10:22:00',
-            place: '중앙대학교',
-        },
-        {
-            id: 3,
-            title: 'Plan 3',
-            start_time: '10-10:20:00',
-            end_time: '10-10:22:00',
-            place: '중앙대학교',
-        },
-        {
-            id: 4,
-            title: 'Plan 4',
-            start_time: '10-10:20:00',
-            end_time: '10-10:22:00',
-            place: '중앙대학교',
-        },
-        {
-            id: 5,
-            title: 'Plan 5',
-            start_time: '10-10:20:00',
-            end_time: '10-10:22:00',
-            place: '중앙대학교',
-        },
-        {
-            id: 6,
-            title: 'Plan 6',
-            start_time: '10-10:20:00',
-            end_time: '10-10:22:00',
-            place: '중앙대학교',
-        },
-    ];
-
-    return (
-        <RootContainer>
-            <Header label={'해야할 일'} TodoList={showTodoList}/>
-            <TodoPlanContainer>
-                <TypeBox
-                    onClick={() => handleShowTodoList()}
-                    active={showTodoList}
-                >
-                    Todo List
-                </TypeBox>
-                <TypeBox
-                    onClick={() => handleShowPlannedList()}
-                    active={showPlannedList}
-                >
-                    Planned List
-                </TypeBox>
-            </TodoPlanContainer>
-            <ContentWrapper active={showTodoList}>
-                {showTodoList
-                    ? todoItems.map((item) => (
-                          <TodoCard
-                              id={item.id}
-                              title={item.title}
-                              deadline={item.deadline}
-                              priority={item.priority}
-                              place={item.place}
-                          />
-                      ))
-                    : plannedItems.map((item) => (
-                          <PlanCard
-                              id={item.id}
-                              title={item.title}
-                              start_time={item.start_time}
-                              end_time={item.end_time}
-                              place={item.place}
-                          />
-                      ))}
-            </ContentWrapper>
-            <Footer label={'todoplan'} />
-        </RootContainer>
-    );
+  return (
+    <RootContainer>
+      <Header label={'해야할 일'} TodoList={showTodoList} PlannedItems={plannedItems} TodoItems={todoItems}/>
+      <TodoPlanContainer>
+        <TypeBox onClick={() => dispatch({ type: SHOW_TODO_LIST })} active={showTodoList}>
+          Todo List
+        </TypeBox>
+        <TypeBox onClick={() => dispatch({ type: SHOW_PLANNED_LIST })} active={showPlannedList}>
+          Planned List
+        </TypeBox>
+      </TodoPlanContainer>
+      <ContentWrapper active={showTodoList}>
+        {showTodoList
+          ? todoItems.map((item) => (
+              <TodoCard
+                id={item.id}
+                title={item.title}
+                deadline={item.deadline}
+                priority={item.priority}
+                place={item.place}
+              />
+            ))
+          : plannedItems.map((item) => (
+              <PlanCard
+                id={item.id}
+                title={item.title}
+                start_time={item.start_time}
+                end_time={item.end_time}
+                place={item.place}
+              />
+            ))}
+      </ContentWrapper>
+      <Footer label={'todoplan'} />
+    </RootContainer>
+  );
 }
 
 const RootContainer = styled.div`

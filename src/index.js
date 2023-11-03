@@ -1,17 +1,23 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { AuthProvider } from './context/AuthContext';
 import { BrowserRouter } from 'react-router-dom';
-import './fonts.css'
+import { TodoProvider } from './context/TodoContext';
+import './fonts.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-    <BrowserRouter>
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
-    </BrowserRouter>
+ReactDOM.render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <AuthProvider>
+                <TodoProvider>
+                    <App />
+                </TodoProvider>
+            </AuthProvider>
+        </BrowserRouter>
+    </React.StrictMode>,
+    document.getElementById('root')
 );
 
 reportWebVitals();
