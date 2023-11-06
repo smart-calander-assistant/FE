@@ -2,21 +2,21 @@ import './App.css';
 import styled from 'styled-components';
 import { Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
-import { useAuthContext } from './context/AuthContext';
 import Login from './pages/Login';
 import Calendar from './pages/Calendar';
 import Todoplan from './pages/Todoplan';
 import Setting from './pages/Setting';
 import Schedule from './pages/Schedule';
+import { getAccessToken } from './localstorage/auth';
 
 function App() {
-    const { authState } = useAuthContext();
+    const accessToken = getAccessToken();
 
     return (
         <RootContainer>
             <OutterContainer>
                 <InnerContainer>
-                    {!authState.isLogined ? (
+                    {!accessToken ? (
                         <Routes>
                             <Route path='/' element={<Login />} />
                         </Routes>

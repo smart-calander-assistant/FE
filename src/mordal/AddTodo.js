@@ -1,38 +1,50 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
-import { TodoContext, ADD_TODO_ITEM } from '../context/TodoContext';
+import axios from '../api/axios';
+import requests from '../api/requests';
+import { getAccessToken } from '../localstorage/auth';
 
 const AddTodo = ({ setAddTodoModalOpen }) => {
-    const { state, dispatch } = useContext(TodoContext);
-
     const [titleInput, setTitleInput] = useState('');
     const [deadlineInput, setDeadlineInput] = useState('');
     const [priorityInput, setPriorityInput] = useState('');
     const [placeInput, setPlaceInput] = useState('');
+    const accessToken = getAccessToken();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newTodo = {
-            id: state.plannedItems.length + 1,
-            title: titleInput,
+            content: titleInput,
             deadline: deadlineInput,
             priority: priorityInput,
             place: placeInput,
+            latitude: 0,
+            longitude: 0,
         };
 
-        // Context API를 통해 ADD_TODO_ITEM 액션을 디스패치하여 전역 상태 업데이트
-        dispatch({ type: ADD_TODO_ITEM, payload: newTodo });
+        console.log('newTodo:', newTodo);
 
-        // 입력값 초기화
-        setTitleInput('');
-        setDeadlineInput('');
-        setPriorityInput('');
-        setPlaceInput('');
+        try {
+            // Axios를 사용하여 POST 요청을 보냅니다.
+            await axios.post(requests.fetchTodo, newTodo, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                },
+            });
 
-        // 모달 닫기
-        setAddTodoModalOpen(false);
+            // 입력값 초기화
+            setTitleInput('');
+            setDeadlineInput('');
+            setPriorityInput('');
+            setPlaceInput('');
+
+            // 모달 닫기
+            setAddTodoModalOpen(false);
+        } catch (error) {
+            console.error('Todo 추가 중 오류 발생: ', error);
+        }
     };
 
     return (
@@ -46,17 +58,17 @@ const AddTodo = ({ setAddTodoModalOpen }) => {
                             onClick={() => setAddTodoModalOpen(false)}
                         />
                     </ModalTitle>
-                    <form onSubmit={handleSubmit}>
-                        <label>
-                            Title:
+                    <InputList onSubmit={handleSubmit}>
+                        <InputLabel>
+                            <p>제목</p>
                             <input
                                 type='text'
                                 value={titleInput}
                                 onChange={(e) => setTitleInput(e.target.value)}
                             />
-                        </label>
-                        <label>
-                            마감기한:
+                        </InputLabel>
+                        <InputLabel>
+                            <p>마감기한</p>
                             <input
                                 type='text'
                                 value={deadlineInput}
@@ -64,9 +76,9 @@ const AddTodo = ({ setAddTodoModalOpen }) => {
                                     setDeadlineInput(e.target.value)
                                 }
                             />
-                        </label>
-                        <label>
-                            중요도:
+                        </InputLabel>
+                        <InputLabel>
+                            <p>중요도</p>
                             <input
                                 type='text'
                                 value={priorityInput}
@@ -74,17 +86,17 @@ const AddTodo = ({ setAddTodoModalOpen }) => {
                                     setPriorityInput(e.target.value)
                                 }
                             />
-                        </label>
-                        <label>
-                            장소:
+                        </InputLabel>
+                        <InputLabel>
+                            <p>장소</p>
                             <input
                                 type='text'
                                 value={placeInput}
                                 onChange={(e) => setPlaceInput(e.target.value)}
                             />
-                        </label>
-                        <button type='submit'>저장</button>
-                    </form>
+                        </InputLabel>
+                        <button type='submit'>Todo 추가하기</button>
+                    </InputList>
                 </ModalContainer>
             </RootContainer>
         </ViewContainer>
@@ -121,7 +133,7 @@ const ModalContainer = styled.div`
 
 const ModalTitle = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: space between;
     gap: 3rem;
     align-items: center;
     color: black;
@@ -130,4 +142,18 @@ const ModalTitle = styled.div`
 const ModalDetail = styled.p`
     font-weight: 600;
     font-size: 1.5rem;
+`
+
+const InputList = styled.form`
+    display: flex;
+    flex-direction: column;
+
+    margin: 1rem 0;
+`
+
+const InputLabel = styled.label`
+    display: flex;
+    gap: 1rem;
+    height: 4rem;
+    justify-content: center;
 `

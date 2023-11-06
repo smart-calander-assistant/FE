@@ -7,10 +7,8 @@ import {
     IoEllipsisHorizontalSharp,
 } from 'react-icons/io5';
 import BorderLine from './BorderLine';
-import { useTodoContext, ADD_TODO_ITEMS } from '../context/TodoContext';
 
 const TodoCard = ({ id, deadline, priority, place, title }) => {
-    const { dispatch } = useTodoContext();
     
     return (
         <TodoContainer>

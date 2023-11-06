@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from 'styled-components';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import smart_assistant from './../img/smart_assistant.png';
 import axios from '../api/axios';
 import Register from '../mordal/Register';
 import requests from '../api/requests';
-import { useAuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useNavigate } from 'react-router-dom';
+import { setAccessToken } from '../localstorage/auth';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -14,9 +14,6 @@ function Login() {
   const [loginEnabled, setLoginEnabled] = useState(false);
   const [isEncrypted, setIsEncrypted] = useState(true);
   const [registermodalOpen, setRegisterModalOpen] = useState(false);
-
-  const { dispatch } = useAuthContext();
-  const [username, setUsername] = useState('');
 
   // useNavigate를 통한 라우트 변경
   const navigate = useNavigate();
@@ -57,18 +54,12 @@ function Login() {
     try {
       // 로그인 API 요청
       const response = await axios.post(requests.fetchLogin, {
-        username,
+        email,
         password,
       });
 
-      // 로그인 성공 시 AuthContext에 accessToken 등록
-      dispatch({
-        type: 'LOGIN',
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-        accessTokenExpiresIn: response.data.accessTokenExpiresIn,
-      });
-
+      console.log(response.data.accessToken);
+      setAccessToken(response.data.accessToken);
       // 이후 라우트 변경
       navigate('/calendar'); // 로그인 성공 시 '/calendar' 페이지로 이동
     } catch (error) {

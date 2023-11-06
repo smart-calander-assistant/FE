@@ -1,35 +1,40 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
-import { TodoContext, ADD_PLANNED_ITEM } from '../context/TodoContext';
 import axios from '../api/axios';
+import requests from '../api/requests';
+import { getAccessToken } from '../localstorage/auth';
 
 const AddPlan = ({ setAddPlanModalOpen }) => {
-    const { state, dispatch } = useContext(TodoContext);
 
     const [titleInput, setTitleInput] = useState('');
     const [startTimeInput, setStartTimeInput] = useState('');
     const [endTimeInput, setEndTimeInput] = useState('');
     const [placeInput, setPlaceInput] = useState('');
+    const accessToken = getAccessToken();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newPlan = {
-            id: state.plannedItems.length + 1,
-            title: titleInput,
-            start_time: startTimeInput,
-            end_time: endTimeInput,
+            content: titleInput,
+            startTime: startTimeInput,
+            endTime: endTimeInput,
             place: placeInput,
+            latitude: 0,
+            longitude: 0,
         };
+
+        console.log('newPlan:', newPlan);
 
         try {
             // Axios를 사용하여 POST 요청을 보냅니다.
-            const response = await axios.post('/plan', newPlan);
-
-            // 성공적으로 요청이 완료되면 전역 상태를 업데이트
-            dispatch({ type: ADD_PLANNED_ITEM, payload: response.data });
-
+            await axios.post(requests.fetchPlan, newPlan, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                },
+            });
+            
             // 입력값 초기화
             setTitleInput('');
             setStartTimeInput('');
@@ -38,11 +43,12 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
 
             // 모달 닫기
             setAddPlanModalOpen(false);
+
         } catch (error) {
             console.error('Plan 추가 중 오류 발생: ', error);
         }
     };
-    
+
     return (
         <ViewContainer>
             <RootContainer>
@@ -54,17 +60,17 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
                             onClick={() => setAddPlanModalOpen(false)}
                         />
                     </ModalTitle>
-                    <form onSubmit={handleSubmit}>
-                        <label>
-                            Title:
+                    <InputList onSubmit={handleSubmit}>
+                        <InputLabel>
+                            <p>제목</p>
                             <input
                                 type='text'
                                 value={titleInput}
                                 onChange={(e) => setTitleInput(e.target.value)}
                             />
-                        </label>
-                        <label>
-                            시작날짜:
+                        </InputLabel>
+                        <InputLabel>
+                            <p>시작날짜</p>
                             <input
                                 type='text'
                                 value={startTimeInput}
@@ -72,9 +78,9 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
                                     setStartTimeInput(e.target.value)
                                 }
                             />
-                        </label>
-                        <label>
-                            종료날짜:
+                        </InputLabel>
+                        <InputLabel>
+                            <p>종료날짜</p>
                             <input
                                 type='text'
                                 value={endTimeInput}
@@ -82,17 +88,17 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
                                     setEndTimeInput(e.target.value)
                                 }
                             />
-                        </label>
-                        <label>
-                            장소:
+                        </InputLabel>
+                        <InputLabel>
+                            <p>장소</p>
                             <input
                                 type='text'
                                 value={placeInput}
                                 onChange={(e) => setPlaceInput(e.target.value)}
                             />
-                        </label>
-                        <button type='submit'>저장</button>
-                    </form>
+                        </InputLabel>
+                        <button type='submit'>Plan 추가하기</button>
+                    </InputList>
                 </ModalContainer>
             </RootContainer>
         </ViewContainer>
@@ -100,7 +106,6 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
 };
 
 export default AddPlan;
-
 
 const ViewContainer = styled.div`
     z-index: 1;
@@ -138,4 +143,18 @@ const ModalTitle = styled.div`
 const ModalDetail = styled.p`
     font-weight: 600;
     font-size: 1.5rem;
-`
+`;
+
+const InputList = styled.form`
+    display: flex;
+    flex-direction: column;
+
+    margin: 1rem 0;
+`;
+
+const InputLabel = styled.label`
+    display: flex;
+    gap: 1rem;
+    height: 4rem;
+    justify-content: cetner;
+`;

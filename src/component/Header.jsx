@@ -16,27 +16,31 @@ const Header = ({ label, TodoList }) => {
         setAddPlanModalOpen(true);
     };
 
-    return (
-        <HeaderContainer>
-            <p>{label}</p>
-            {TodoList && (
-                <AiOutlinePlus size={'2rem'} onClick={handleAddTodoModal} />
-            )}
-            {!TodoList && (
-                <AiOutlinePlus size={'2rem'} onClick={handleAddPlanModal} />
-            )}
-            {addTodoModalOpen && (
-                <AddTodo
-                    setAddTodoModalOpen={setAddTodoModalOpen}
-                />
-            )}
-            {addPlanModalOpen && (
-                <AddPlan
-                    setAddPlanModalOpen={setAddPlanModalOpen}
-                />
-            )}
-        </HeaderContainer>
-    );
+    if (label === '해야할 일') {
+        return (
+            <HeaderContainer>
+                <p>{label}</p>
+                {TodoList && (
+                    <AiOutlinePlus size={'2rem'} onClick={handleAddTodoModal} />
+                )}
+                {!TodoList && (
+                    <AiOutlinePlus size={'2rem'} onClick={handleAddPlanModal} />
+                )}
+                {addTodoModalOpen && (
+                    <AddTodo setAddTodoModalOpen={setAddTodoModalOpen} />
+                )}
+                {addPlanModalOpen && (
+                    <AddPlan setAddPlanModalOpen={setAddPlanModalOpen} />
+                )}
+            </HeaderContainer>
+        );
+    } else {
+        return (
+            <HeaderContainer>
+                <p>{label}</p>
+            </HeaderContainer>
+        );
+    }
 };
 
 export default Header;
