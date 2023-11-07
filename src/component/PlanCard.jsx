@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
     IoAlarmOutline,
@@ -6,10 +6,46 @@ import {
     IoFlagSharp,
     IoEllipsisHorizontalSharp,
 } from 'react-icons/io5';
+import useOnClickOutside from '../hooks/useOnClickOutside';
+import EditPlan from '../mordal/EditPlan';
 import BorderLine from './BorderLine';
 
-const PlanCard = ({ id, start_time, end_time, place, title }) => {
-    
+const PlanCard = ({
+    id,
+    start_time,
+    end_time,
+    place,
+    title,
+    onEdit,
+    onDelete,
+}) => {
+    const ref = useRef();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [editPlanModalOpen, setEditPlanModalOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(true);
+    };
+
+    useOnClickOutside(ref, () => {
+        setIsMenuOpen(false);
+    });
+
+    const handleEditClick = () => {
+        // "수정하기" 클릭 시 수행할 작업
+        setIsMenuOpen(false);
+        setEditPlanModalOpen(true);
+        console.log('수정하기');
+        onEdit(id);
+    };
+
+    const handleDeleteClick = () => {
+        // "삭제하기" 클릭 시 수행할 작업
+        setIsMenuOpen(false);
+        console.log('삭제하기');
+        onDelete(id);
+    };
+
     return (
         <TodoContainer>
             <HeaderBox>
@@ -17,7 +53,18 @@ const PlanCard = ({ id, start_time, end_time, place, title }) => {
                     <IoFlagSharp size={'1rem'} />
                     <p>진행 중</p>
                 </PriorityBox>
-                <IoEllipsisHorizontalSharp size={'1.5rem'} />
+                <IoEllipsisHorizontalSharp
+                    size={'1.5rem'}
+                    onClick={toggleMenu}
+                />
+                {isMenuOpen && (
+                    <Menu ref={ref}>
+                        <MenuItem onClick={handleEditClick}>수정하기</MenuItem>
+                        <MenuItem onClick={handleDeleteClick}>
+                            삭제하기
+                        </MenuItem>
+                    </Menu>
+                )}
             </HeaderBox>
             <ContentBox>
                 <TitleBox>
@@ -25,7 +72,7 @@ const PlanCard = ({ id, start_time, end_time, place, title }) => {
                     <p>{title}</p>
                 </TitleBox>
                 <PlaceBox>
-                    <p>장소 : {place}</p>
+                    {place === '' ? '' : <p>장소 : {place}</p>}
                 </PlaceBox>
                 <BorderLine />
                 <TimeContainer>
@@ -40,6 +87,16 @@ const PlanCard = ({ id, start_time, end_time, place, title }) => {
                     </TimeBox>
                 </TimeContainer>
             </ContentBox>
+            {editPlanModalOpen && (
+                <EditPlan
+                    id={id}
+                    title={title}
+                    start_time={start_time}
+                    end_time={end_time}
+                    place={place}
+                    setEditPlanModalOpen={setEditPlanModalOpen}
+                />
+            )}
         </TodoContainer>
     );
 };
@@ -70,6 +127,24 @@ const PriorityBox = styled.div`
 
     font-size: smaller;
 `;
+
+const Menu = styled.div`
+    position: absolute;
+    color: black;
+    background: white;
+    border: 0.5px solid #3a86ff;
+    right: 1rem;
+`;
+
+const MenuItem = styled.div`
+    padding: 0.5rem 1rem;
+    border: 0.5px solid #3a86ff;
+    &:hover {
+        background-color: #3a86ff;
+        opacity: 0.7;
+    }
+`;
+
 const ContentBox = styled.div`
     background-color: white;
     border-radius: 0 0 0.5rem 0.5rem;
