@@ -4,6 +4,7 @@ import { IoClose } from 'react-icons/io5';
 import axios from '../api/axios';
 import requests from '../api/requests';
 import { getAccessToken } from '../localstorage/auth';
+import SearchPlace from "../component/SearchPlace";
 
 const AddPlan = ({ setAddPlanModalOpen }) => {
 
@@ -12,6 +13,12 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
     const [endTimeInput, setEndTimeInput] = useState('');
     const [placeInput, setPlaceInput] = useState('');
     const accessToken = getAccessToken();
+    const [coordinates, setCoordinates] = useState({ latitude: 37.5050881, longitude: 126.9571012 });
+
+    const handlePlaceSelect = ({place, coordinates}) => {
+        setPlaceInput(place);
+        setCoordinates(coordinates);
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,8 +28,8 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
             startTime: startTimeInput,
             endTime: endTimeInput,
             place: placeInput,
-            latitude: 0,
-            longitude: 0,
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
         };
 
         console.log('newPlan:', newPlan);
@@ -40,6 +47,7 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
             setStartTimeInput('');
             setEndTimeInput('');
             setPlaceInput('');
+            setCoordinates({ latitude: 37.5050881, longitude: 126.9571012 });
 
             // 모달 닫기
             setAddPlanModalOpen(false);
@@ -89,14 +97,7 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
                                 }
                             />
                         </InputLabel>
-                        <InputLabel>
-                            <p>장소</p>
-                            <input
-                                type='text'
-                                value={placeInput}
-                                onChange={(e) => setPlaceInput(e.target.value)}
-                            />
-                        </InputLabel>
+                        <SearchPlace onPlaceSelect={handlePlaceSelect}/>
                         <button type='submit'>Plan 추가하기</button>
                     </InputList>
                 </ModalContainer>
