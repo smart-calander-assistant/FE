@@ -11,7 +11,7 @@ import { getAccessToken } from '../localstorage/auth';
 export default function Todoplan() {
     const [data, setData] = useState([]);
     const [showTodoList, setShowTodoList] = useState(true);
-
+    const [isComplete, setIsComplete] = useState(false);
     const accessToken = getAccessToken();
 
     useEffect(() => {
@@ -24,7 +24,7 @@ export default function Todoplan() {
             try {
                 if (showTodoList) {
                     // showTodoList가 true일 때는 Todo 데이터를 가져옵니다.
-                    const response = await axios.get(requests.fetchTodo, {
+                    const response = await axios.get(`${requests.fetchTodo}?complete=${isComplete}`, {
                         headers: {
                             Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
                         },
@@ -49,6 +49,69 @@ export default function Todoplan() {
         fetchData();
     }, [accessToken, showTodoList]);
 
+    const handleEditPlan = (planId) => {
+        axios.get(`/plan/${planId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .then((response) => {
+                const planData = response.data;
+                console.log('수정할 Plan 데이터:', planData);
+            })
+            .catch((error) => {
+                console.error('Plan 수정 중 오류 발생: ', error);
+            });
+    };
+
+    const handleDeletePlan = (planId) => {
+        axios.delete(`/plan/${planId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        })
+        .catch((error) => {
+            console.error('Plan 삭제 중 오류 발생: ', error);
+        });
+    };
+
+    const handleEditTodo = (todoId) => {
+        axios.get(`/todo/${todoId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .then((response) => {
+                const todoData = response.data;
+                console.log('수정할 Todo 데이터:', todoData);
+            })
+            .catch((error) => {
+                console.error('Todo 수정 중 오류 발생: ', error);
+            });
+    };
+
+    const handleDeleteTodo = (todoId) => {
+        axios.delete(`/todo/${todoId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        })
+        .catch((error) => {
+            console.error('Todo 삭제 중 오류 발생: ', error);
+        });
+    };
+
+    const handleCompleteTodo = (todoId, isCompleted) => {
+        axios.patch(`/todo/${todoId}`, isCompleted, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        })
+        .catch((error) => {
+            console.error('Todo 패치 중 오류 발생: ', error);
+        });
+    };
+
     return (
         <RootContainer>
             <Header label={'해야할 일'} TodoList={showTodoList} />
@@ -60,7 +123,6 @@ export default function Todoplan() {
                     Todo List
                 </TypeBox>
                 <TypeBox
-                    id={'addPlan'}
                     onClick={() => setShowTodoList(false)}
                     active={!showTodoList}
                 >
@@ -71,20 +133,26 @@ export default function Todoplan() {
                 {showTodoList
                     ? data.map((item) => (
                           <TodoCard
-                              key={item.id}
+                              id={item.id}
                               title={item.content}
                               deadline={item.deadline}
                               priority={item.priority}
                               place={item.place}
+                              isCompleted={item.complete}
+                              onEdit={handleEditTodo}
+                              onDelete={handleDeleteTodo}
+                              onComplete={handleCompleteTodo}
                           />
                       ))
                     : data.map((item) => (
                           <PlanCard
-                              key={item.id}
+                              id={item.id}
                               title={item.content}
                               start_time={item.startTime}
                               end_time={item.endTime}
                               place={item.place}
+                              onEdit={handleEditPlan}
+                              onDelete={handleDeletePlan}
                           />
                       ))}
             </ContentWrapper>

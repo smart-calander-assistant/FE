@@ -62,6 +62,7 @@ function Login() {
       setAccessToken(response.data.accessToken);
       // 이후 라우트 변경
       navigate('/calendar'); // 로그인 성공 시 '/calendar' 페이지로 이동
+      window.location.reload();
     } catch (error) {
       console.error('로그인 오류: ', error);
     }
