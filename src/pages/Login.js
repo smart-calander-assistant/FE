@@ -7,6 +7,7 @@ import Register from '../mordal/Register';
 import requests from '../api/requests';
 import { useNavigate } from 'react-router-dom';
 import { setAccessToken } from '../localstorage/auth';
+import Swal from 'sweetalert2';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -65,20 +66,11 @@ function Login() {
       window.location.reload();
     } catch (error) {
       console.error('로그인 오류: ', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await axios.get(requests.fetchLogout);
-
-      if (response.data) {
-        console.log('로그아웃 성공');
-      } else {
-        console.log('로그아웃 실패:', response.data);
-      }
-    } catch (error) {
-      console.error('로그아웃 오류:', error);
+      Swal.fire({
+        icon: "error",
+        title: "로그인 오류",
+        text: "입력된 정보가 잘못되었습니다",
+      });
     }
   };
 
@@ -131,7 +123,6 @@ function Login() {
         >
           로그인
         </LoginButton>
-        {/* <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton> */}
         <OtherContainer>
           <SignInBox onClick={() => handleRegister()}>회원가입</SignInBox>
           {registermodalOpen && (

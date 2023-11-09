@@ -3,6 +3,13 @@ import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import axios from '../api/axios';
 import { getAccessToken } from '../localstorage/auth';
+import NumberSelector from '../component/NumberSelector';
+import SearchPlace from '../component/SearchPlace';
+import Swal from 'sweetalert2';
+import DatePicker from 'react-datepicker';
+import { ko } from 'date-fns/esm/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 
 const EditTodo = ({
     id,
@@ -12,35 +19,53 @@ const EditTodo = ({
     title,
     setEditTodoModalOpen,
 }) => {
-    const [titleInput, setTitleInput] = useState('');
-    const [deadlineInput, setDeadlineInput] = useState('');
-    const [priorityInput, setPriorityInput] = useState('');
-    const [placeInput, setPlaceInput] = useState('');
+    const [titleInput, setTitleInput] = useState(title);
+    const [deadlineInput, setDeadlineInput] = useState(new Date(deadline));
+    const [priorityInput, setPriorityInput] = useState(priority);
+    const [placeInput, setPlaceInput] = useState(place);
+    const [coordinates, setCoordinates] = useState({
+        latitude: 37.5050881,
+        longitude: 126.9571012,
+    });
     const accessToken = getAccessToken();
 
     useEffect(() => {
         // 컴포넌트가 마운트될 때, 기존 정보를 입력 필드에 표시
         setTitleInput(title);
-        setDeadlineInput(deadline);
+        setDeadlineInput(new Date(deadline));
         setPriorityInput(priority);
         setPlaceInput(place);
     }, [title, deadline, priority, place]);
 
+    const handlePlaceSelect = ({ place, coordinates }) => {
+        setPlaceInput(place);
+        setCoordinates(coordinates);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const editTodo = {
-            content: titleInput,
-            deadline: deadlineInput,
-            priority: priorityInput,
-            place: placeInput,
-            latitude: 0,
-            longitude: 0,
-        };
-
-        console.log('editTodo:', editTodo);
-
         try {
+            if (titleInput === '' || deadlineInput === '') {
+                Swal.fire({
+                    icon: 'error',
+                    text: '제목과 마감기한은 반드시 입력해야 합니다',
+                });
+                throw new Error('titleInput 또는 deadlineInput이 null입니다.');
+            }
+
+            const formattedDeadline = format(deadlineInput, 'yyyy-MM-dd HH:mm');
+
+            const editTodo = {
+                content: titleInput,
+                deadline: formattedDeadline,
+                priority: priorityInput,
+                place: placeInput,
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+            };
+
+            console.log('editTodo:', editTodo);
+
             // Axios를 사용하여 PUT 요청을 보냅니다.
             await axios.put(`/todo/${id}`, editTodo, {
                 headers: {
@@ -53,12 +78,26 @@ const EditTodo = ({
             setDeadlineInput('');
             setPriorityInput('');
             setPlaceInput('');
+            setCoordinates({ latitude: 37.5050881, longitude: 126.9571012 });
 
             // 모달 닫기
             setEditTodoModalOpen(false);
+
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Todo가 수정되었습니다',
+                showConfirmButton: false,
+                timer: 2000,
+            });
         } catch (error) {
             console.error('Todo 수정 중 오류 발생: ', error);
         }
+    };
+
+    const handleNumberSelect = (priority) => {
+        setPriorityInput(priority);
+        console.log(`Selected number: ${priority}`);
     };
 
     return (
@@ -72,48 +111,47 @@ const EditTodo = ({
                             onClick={() => setEditTodoModalOpen(false)}
                         />
                     </ModalTitle>
-                    <InputList onSubmit={handleSubmit}>
+                    <InputList>
                         <InputLabel>
                             <p>제목</p>
-                            <input
+                            <InputBox
                                 type='text'
-                                placeholder={title}
                                 value={titleInput}
+                                placeholder={title}
                                 onChange={(e) => setTitleInput(e.target.value)}
                             />
                         </InputLabel>
                         <InputLabel>
                             <p>마감기한</p>
-                            <input
-                                type='text'
-                                placeholder={deadline}
-                                value={deadlineInput}
-                                onChange={(e) =>
-                                    setDeadlineInput(e.target.value)
-                                }
+                            <DateContainer
+                                selected={deadlineInput}
+                                onChange={(date) => setDeadlineInput(date)}
+                                locale={ko}
+                                showTimeSelect
+                                timeFormat='p'
+                                timeIntervals={30}
+                                dateFormat='yyyy-MM-dd HH:mm'
+                                placeholderText={deadline}
                             />
                         </InputLabel>
                         <InputLabel>
                             <p>중요도</p>
-                            <input
-                                type='text'
-                                placeholder={priority}
-                                value={priorityInput}
-                                onChange={(e) =>
-                                    setPriorityInput(e.target.value)
-                                }
+                            <NumberSelector
+                                onSelect={handleNumberSelect}
+                                number={5}
+                                defaultNumber={priorityInput}
                             />
                         </InputLabel>
                         <InputLabel>
                             <p>장소</p>
-                            <input
-                                type='text'
+                            <SearchPlace
+                                onPlaceSelect={handlePlaceSelect}
                                 placeholder={place}
-                                value={placeInput}
-                                onChange={(e) => setPlaceInput(e.target.value)}
                             />
                         </InputLabel>
-                        <button type='submit'>Todo 수정하기</button>
+                        <SubmitButton onClick={handleSubmit}>
+                            Todo 수정하기
+                        </SubmitButton>
                     </InputList>
                 </ModalContainer>
             </RootContainer>
@@ -133,9 +171,8 @@ const RootContainer = styled.div`
     inset: 0;
     background-color: rgb(0 0 0 / 30%);
     -webkit-tap-highlight-color: transparent;
-    display: flex;
     justify-content: center;
-    padding: 6rem 3rem;
+    padding: 6rem 1.5rem;
 `;
 
 const ModalContainer = styled.div`
@@ -161,16 +198,45 @@ const ModalDetail = styled.p`
     font-size: 1.5rem;
 `;
 
-const InputList = styled.form`
+const InputList = styled.div`
     display: flex;
     flex-direction: column;
+    gap: 1rem;
 
-    margin: 1rem 0;
+    margin-top: 1rem;
 `;
 
-const InputLabel = styled.label`
+const InputLabel = styled.div`
     display: flex;
-    gap: 1rem;
-    height: 4rem;
-    justify-content: cetner;
+    flex-direction: column;
+    font-size: medium;
+    margin: 0.5rem 0;
+    gap: 0.5rem;
+`;
+
+const InputBox = styled.input`
+    border: 0.1rem solid #de496e;
+    border-radius: 0.5rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+`;
+
+const SubmitButton = styled.button`
+    background-color: #0acf83;
+    color: black;
+    font-size: large;
+    border: 0.1rem solid #0acf83;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+
+    &:hover {
+        opacity: 0.7;
+    }
+`;
+
+const DateContainer = styled(DatePicker)`
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #de496e;
 `;

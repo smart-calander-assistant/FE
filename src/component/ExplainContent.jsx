@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const ExplainContent = ({title, content}) => {
+const ExplainContent = ({title, content, onClick}) => {
   return (
-    <RootContainer>
+    <RootContainer onClick={onClick}>
         <TitleBox>{title}</TitleBox>
         <ContentBox>{content}</ContentBox>
     </RootContainer>

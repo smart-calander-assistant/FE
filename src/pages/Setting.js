@@ -1,69 +1,108 @@
-import React from 'react'
-import Footer from '../component/Footer'
-import styled from 'styled-components'
-import Header from '../component/Header'
-import ExplainContent from '../component/ExplainContent'
-import RecordContent from '../component/RecordContent'
+import React, {useState } from 'react';
+import Footer from '../component/Footer';
+import styled from 'styled-components';
+import Header from '../component/Header';
+import ExplainContent from '../component/ExplainContent';
+import RecordContent from '../component/RecordContent';
+import { removeAccessToken, getAccessToken } from '../localstorage/auth';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import MyInfo from '../mordal/MyInfo';
 
 export default function Setting() {
-    const [day, successDay] = [12, 8];
-    const successDayRate = ((successDay / day) * 100).toFixed(1);
-    const [todo, successTodo] = [28, 21];
-    const successTodoRate = ((successTodo / todo) * 100).toFixed(1);
-    const recommended = 7;
+  const [day, successDay] = [12, 8];
+  const successDayRate = ((successDay / day) * 100).toFixed(1);
+  const [todo, successTodo] = [28, 21];
+  const successTodoRate = ((successTodo / todo) * 100).toFixed(1);
+  const recommended = 7;
+  const [myInfoModalOpen, setMyInfoModalOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "정말 로그아웃 하시겠습니까?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A86FF",
+      cancelButtonColor: "#de496e",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const accessToken = getAccessToken();
+        removeAccessToken(accessToken);
+        Swal.fire("로그아웃 완료", "로그인 페이지로 돌아갑니다", "success").then(() => {
+            navigate('/');
+            window.location.reload();
+        });
+      }
+    });
+  };
+
+  const handleChange = () => {
+
+  }
 
   return (
     <RootContainer>
-        <Header label={'설정'}/>
-        <ContentWrapper>
-            <ExplainContent title={"일정 기록 현황"} content={"얼마나 갓생을 살고 있는지 확인해보세요!!"}/>
-            <RecordContainer>
-                <RecordContent title={"성공적인 하루"} content={`${day}일동안 ${successDay}일의 일정을 마무리했어요`} type={"goal"} percent={`달성률 ${successDayRate}%`}/>
-                <RecordContent title={"바쁘다 바빠"} content={`${todo}개의 해야할 일 중 ${successTodo}개를 끝냈어요`} type={"goal"} percent={`달성률 ${successTodoRate}%`}/>
-                <RecordContent title={"정교한 일정 설정"} content={`Ai가 추천한 일정을 ${recommended}번을 선택했어요`} type={"achievement"}/>
-            </RecordContainer>
-            <ExplainContent title={"일정 기록 초기화"} content={"일정 기록 현황을 전부 초기화할 수 있습니다!!"}/>
-            <ExplainContent title={"내 정보수정"} content={"개인정보를 바꿀 수 있습니다"}/>
-            <ExplainContent title={"1:1 문의"} content={"불편한 점 및 문의사항을 남겨주세요"}/>
-            <ExplainContent title={"로그아웃"} content={"혹시 개인핸드폰 및 PC가 아니라면 로그아웃을 해주세요"}/>
-            <ExplainContent title={"회원 탈퇴"} content={"계정을 삭제합니다"}/>
-        </ContentWrapper>
-        <Footer label={'setting'} />
+      <Header label={'설정'} />
+      <ContentWrapper>
+        <ExplainContent title={"일정 기록 현황"} content={"얼마나 갓생을 살고 있는지 확인해보세요!!"} />
+        <RecordContainer>
+          <RecordContent
+            title={"성공적인 하루"}
+            content={`${day}일동안 ${successDay}일의 일정을 마무리했어요`}
+            type={"goal"}
+            percent={`달성률 ${successDayRate}%`}
+          />
+          <RecordContent
+            title={"바쁘다 바빠"}
+            content={`${todo}개의 해야할 일 중 ${successTodo}개를 끝냈어요`}
+            type={"goal"}
+            percent={`달성률 ${successTodoRate}%`}
+          />
+          <RecordContent
+            title={"정교한 일정 설정"}
+            content={`Ai가 추천한 일정을 ${recommended}번을 선택했어요`}
+            type={"achievement"}
+          />
+        </RecordContainer>
+        <ExplainContent title={"내 정보"} content={"개인정보를 입력해주세요"} />
+        {myInfoModalOpen && (<MyInfo setMyInfoModalOpen={setMyInfoModalOpen} />)}
+        <ExplainContent title={"일정 기록 초기화"} content={"일정 기록 현황을 전부 초기화할 수 있습니다!!"} />
+        <ExplainContent title={"로그아웃"} content={"로그아웃하려면 아래 버튼을 클릭하세요"} onClick={handleLogout} />
+        <ExplainContent title={"회원 탈퇴"} content={"계정을 삭제합니다"} />
+      </ContentWrapper>
+      <Footer label={'setting'} />
     </RootContainer>
-  )
+  );
 }
 
-
 const RootContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 `;
 
 const RecordContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin: 0 0.25rem;
-`
+  display: flex;
+  flex-direction: column;
+  margin: 0 0.25rem;
+`;
 
 const ContentWrapper = styled.div`
-    flex: 1;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
+  flex: 1;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
 
-    &:hover {
-        overflow-y: auto;
-    }
+  &:hover {
+    overflow-y: auto;
+  }
 
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
-    /* &::-webkit-scrollbar-thumb {
-        background-color: gray;
-        border-radius: 1rem;
-    } */
-    &::-webkit-scrollbar-track {
-        background-color: #f5f5f5;
-    }
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+  }
 `;
