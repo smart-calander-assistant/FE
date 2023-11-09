@@ -1,40 +1,57 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import {IoClose} from 'react-icons/io5';
+import { IoClose } from 'react-icons/io5';
 import axios from '../api/axios';
 import requests from '../api/requests';
 import { getAccessToken } from '../localstorage/auth';
 import NumberSelector from '../component/NumberSelector';
 import SearchPlace from '../component/SearchPlace';
+import Swal from 'sweetalert2';
+import DatePicker from 'react-datepicker';
+import { ko } from 'date-fns/esm/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 
-const AddTodo = ({setAddTodoModalOpen}) => {
+const AddTodo = ({ setAddTodoModalOpen }) => {
     const [titleInput, setTitleInput] = useState('');
-    const [deadlineInput, setDeadlineInput] = useState('');
-    const [priorityInput, setPriorityInput] = useState('');
+    const [priorityInput, setPriorityInput] = useState(3);
+    const [deadlineInput, setDeadlineInput] = useState(null);
     const [placeInput, setPlaceInput] = useState('');
     const accessToken = getAccessToken();
-    const [coordinates, setCoordinates] = useState({latitude: 37.5050881, longitude: 126.9571012});
+    const [coordinates, setCoordinates] = useState({
+        latitude: 37.5050881,
+        longitude: 126.9571012,
+    });
 
-    const handlePlaceSelect = ({place, coordinates}) => {
+    const handlePlaceSelect = ({ place, coordinates }) => {
         setPlaceInput(place);
         setCoordinates(coordinates);
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const newTodo = {
-            content: titleInput,
-            deadline: deadlineInput,
-            priority: priorityInput,
-            place: placeInput,
-            latitude: coordinates.latitude,
-            longitude: coordinates.longitude,
-        };
-
-        console.log('newTodo:', newTodo);
-
         try {
+            if (titleInput === '' || deadlineInput === '') {
+                Swal.fire({
+                    icon: 'error',
+                    text: '제목과 마감기한은 반드시 입력해야 합니다',
+                });
+                throw new Error('titleInput 또는 deadlineInput이 null입니다.');
+            }
+
+            const formattedDeadline = format(deadlineInput, 'yyyy-MM-dd HH:mm');
+
+            const newTodo = {
+                content: titleInput,
+                deadline: formattedDeadline,
+                priority: priorityInput,
+                place: placeInput,
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+            };
+
+            console.log('newTodo:', newTodo);
+
             // Axios를 사용하여 POST 요청을 보냅니다.
             await axios.post(requests.fetchTodo, newTodo, {
                 headers: {
@@ -47,20 +64,28 @@ const AddTodo = ({setAddTodoModalOpen}) => {
             setDeadlineInput('');
             setPriorityInput('');
             setPlaceInput('');
-            setCoordinates({latitude: 37.5050881, longitude: 126.9571012});
+            setCoordinates({ latitude: 37.5050881, longitude: 126.9571012 });
 
             // 모달 닫기
             setAddTodoModalOpen(false);
             // window.location.reload();
+
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Todo가 추가되었습니다',
+                showConfirmButton: false,
+                timer: 2000,
+            });
         } catch (error) {
             console.error('Todo 추가 중 오류 발생: ', error);
         }
     };
 
     const handleNumberSelect = (priority) => {
+        setPriorityInput(priority);
         console.log(`Selected number: ${priority}`);
-        // 여기에서 선택한 번호를 사용하거나 상태를 업데이트할 수 있습니다.
-      };
+    };
 
     return (
         <ViewContainer>
@@ -73,38 +98,47 @@ const AddTodo = ({setAddTodoModalOpen}) => {
                             onClick={() => setAddTodoModalOpen(false)}
                         />
                     </ModalTitle>
-                    <InputList onSubmit={handleSubmit}>
+                    <InputList>
                         <InputLabel>
-                            <input
+                            <p>제목</p>
+                            <InputBox
                                 type='text'
                                 value={titleInput}
-                                placeholder={'제목을 입력해주세요'}
+                                placeholder={'제목을 입력하세요'}
                                 onChange={(e) => setTitleInput(e.target.value)}
                             />
                         </InputLabel>
                         <InputLabel>
-                            <input
-                                type='text'
-                                value={deadlineInput}
-                                placeholder={'마감기한을 입력해주세요'}
-                                onChange={(e) =>
-                                    setDeadlineInput(e.target.value)
-                                }
+                            <p>마감기한</p>
+                            <DateContainer
+                                selected={deadlineInput}
+                                onChange={(date) => setDeadlineInput(date)}
+                                locale={ko}
+                                showTimeSelect
+                                timeFormat='p'
+                                timeIntervals={30}
+                                dateFormat='yyyy-MM-dd HH:mm'
+                                placeholderText='마감기한을 선택하세요'
                             />
                         </InputLabel>
                         <InputLabel>
-                            <input
-                                type='text'
-                                value={priorityInput}
-                                placeholder={'1에서 5까지 중요도를 입력해주세요'}
-                                onChange={(e) =>
-                                    setPriorityInput(e.target.value)
-                                }
+                            <p>중요도</p>
+                            <NumberSelector
+                                onSelect={handleNumberSelect}
+                                number={5}
+                                defaultNumber={priorityInput}
                             />
-                            <NumberSelector onSelect={handleNumberSelect} />
                         </InputLabel>
-                        <SearchPlace onPlaceSelect={handlePlaceSelect}/>
-                        <button type='submit'>Todo 추가하기</button>
+                        <InputLabel>
+                            <p>장소</p>
+                            <SearchPlace
+                                onPlaceSelect={handlePlaceSelect}
+                                placeholder={'장소를 입력하세요'}
+                            />
+                        </InputLabel>
+                        <SubmitButton onClick={handleSubmit}>
+                            Todo 추가하기
+                        </SubmitButton>
                     </InputList>
                 </ModalContainer>
             </RootContainer>
@@ -114,63 +148,82 @@ const AddTodo = ({setAddTodoModalOpen}) => {
 
 export default AddTodo;
 
-
 const ViewContainer = styled.div`
-  z-index: 1;
-  position: absolute;
+    z-index: 1;
+    position: absolute;
 `;
 
 const RootContainer = styled.div`
-  position: fixed;
-  inset: 0;
-  background-color: rgb(0 0 0 / 30%);
-  -webkit-tap-highlight-color: transparent;
-  display: flex;
-  justify-content: center;
-  padding: 6rem 3rem;
+    position: fixed;
+    inset: 0;
+    background-color: rgb(0 0 0 / 30%);
+    -webkit-tap-highlight-color: transparent;
+    justify-content: center;
+    padding: 6rem 1.5rem;
 `;
 
 const ModalContainer = styled.div`
-  position: relative;
-  background: white;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  transition: all 400ms ease-in-out 2s;
-  overflow-y: scroll;
-  padding: 2rem;
+    position: relative;
+    background: white;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    transition: all 400ms ease-in-out 2s;
+    overflow-y: scroll;
+    padding: 2rem;
 `;
 
 const ModalTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 3rem;
-  align-items: center;
-  color: black;
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    align-items: center;
+    color: black;
 `;
 
 const ModalDetail = styled.p`
-  font-weight: 600;
-  font-size: 1.5rem;
-`
+    font-weight: 600;
+    font-size: 1.5rem;
+`;
 
-const InputList = styled.form`
-  display: flex;
-  flex-direction: column;
+const InputList = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 
-  margin: 1rem 0;
-`
+    margin-top: 1rem;
+`;
 
 const InputLabel = styled.div`
     display: flex;
-    gap: 1rem;
-    height: 2rem;
-    width: 100%;
+    flex-direction: column;
+    font-size: medium;
     margin: 0.5rem 0;
-    justify-content: center;
-    border-color: #de496e;
-`
+    gap: 0.5rem;
+`;
+
+const InputBox = styled.input`
+    border: 0.1rem solid #de496e;
+    border-radius: 0.5rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+`;
 
 const SubmitButton = styled.button`
-    display: flex;
-    align-items: center;
-`
+    background-color: #0acf83;
+    color: black;
+    font-size: large;
+    border: 0.1rem solid #0acf83;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+
+    &:hover {
+        opacity: 0.7;
+    }
+`;
+
+const DateContainer = styled(DatePicker)`
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #de496e;
+`;

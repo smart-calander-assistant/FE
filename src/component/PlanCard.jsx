@@ -9,6 +9,7 @@ import {
 import useOnClickOutside from '../hooks/useOnClickOutside';
 import EditPlan from '../mordal/EditPlan';
 import BorderLine from './BorderLine';
+import Swal from 'sweetalert2';
 
 const PlanCard = ({
     id,
@@ -35,14 +36,27 @@ const PlanCard = ({
         // "수정하기" 클릭 시 수행할 작업
         setIsMenuOpen(false);
         setEditPlanModalOpen(true);
-        console.log('수정하기');
         onEdit(id);
     };
 
     const handleDeleteClick = () => {
         // "삭제하기" 클릭 시 수행할 작업
         setIsMenuOpen(false);
-        console.log('삭제하기');
+        Swal.fire({
+            title: "해당 Plan을 삭제하시겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "삭제 완료",
+                icon: "success"
+              });
+            }
+          });
         onDelete(id);
     };
 
@@ -53,10 +67,10 @@ const PlanCard = ({
                     <IoFlagSharp size={'1rem'} />
                     <p>진행 중</p>
                 </PriorityBox>
-                <IoEllipsisHorizontalSharp
+                {!isMenuOpen && <IoEllipsisHorizontalSharp
                     size={'1.5rem'}
                     onClick={toggleMenu}
-                />
+                />}
                 {isMenuOpen && (
                     <Menu ref={ref}>
                         <MenuItem onClick={handleEditClick}>수정하기</MenuItem>
@@ -129,11 +143,10 @@ const PriorityBox = styled.div`
 `;
 
 const Menu = styled.div`
-    position: absolute;
+    position: relative;
     color: black;
     background: white;
     border: 0.5px solid #3a86ff;
-    right: 1rem;
 `;
 
 const MenuItem = styled.div`

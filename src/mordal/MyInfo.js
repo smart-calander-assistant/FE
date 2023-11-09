@@ -5,7 +5,7 @@ import requests from '../api/requests';
 import { IoClose } from 'react-icons/io5';
 import Swal from 'sweetalert2';
 
-export default function Register({ setRegisterModalOpen }) {
+export default function MyInfo({ setMyInfoModalOpen }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -42,10 +42,10 @@ export default function Register({ setRegisterModalOpen }) {
             <RootContainer>
                 <ModalContainer>
                     <ModalTitle>
-                        <ModalDetail>회원가입</ModalDetail>
+                        <ModalDetail>내 정보</ModalDetail>
                         <IoClose
                             size={'2rem'}
-                            onClick={() => setRegisterModalOpen(false)}
+                            onClick={() => setMyInfoModalOpen(false)}
                         />
                     </ModalTitle>
                         <InputList>

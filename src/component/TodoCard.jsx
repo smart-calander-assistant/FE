@@ -9,6 +9,7 @@ import {
 import useOnClickOutside from '../hooks/useOnClickOutside';
 import EditTodo from '../mordal/EditTodo';
 import BorderLine from './BorderLine';
+import Swal from 'sweetalert2';
 
 const TodoCard = ({
     id,
@@ -37,20 +38,40 @@ const TodoCard = ({
         // "수정하기" 클릭 시 수행할 작업
         setIsMenuOpen(false);
         setEditTodoModalOpen(true);
-        console.log('수정하기');
         onEdit(id);
     };
 
     const handleDeleteClick = () => {
         // "삭제하기" 클릭 시 수행할 작업
         setIsMenuOpen(false);
-        console.log('삭제하기');
+        Swal.fire({
+            title: '해당 Todo를 삭제하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: '삭제 완료',
+                    icon: 'success',
+                });
+            }
+        });
         onDelete(id);
     };
 
     const handleCompleteClick = () => {
         isCompleted = false;
         setIsMenuOpen(false);
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: '해당 Todo가 완료되었습니다',
+            showConfirmButton: false,
+            timer: 2000,
+        });
         console.log('작업완료');
         onComplete(id, isCompleted);
     };
@@ -63,10 +84,12 @@ const TodoCard = ({
                     {!isCompleted && <p>Todo 미완료</p>}
                     {isCompleted && <p>Todo 완료</p>}
                 </PriorityBox>
-                <IoEllipsisHorizontalSharp
-                    size={'1.5rem'}
-                    onClick={toggleMenu}
-                />
+                {!isMenuOpen && (
+                    <IoEllipsisHorizontalSharp
+                        size={'1.5rem'}
+                        onClick={toggleMenu}
+                    />
+                )}
                 {isMenuOpen && (
                     <Menu ref={ref}>
                         <MenuItem onClick={handleEditClick}>수정하기</MenuItem>
@@ -84,9 +107,7 @@ const TodoCard = ({
                     <IoListCircleOutline size={'1.5rem'} color={'#DE496E'} />
                     <p>{title}</p>
                 </TitleBox>
-                <PlaceBox>
-                    {place === '' ? '' : <p>장소 : {place}</p>}
-                </PlaceBox>
+                <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
                     <AlarmBox>
@@ -104,6 +125,7 @@ const TodoCard = ({
                     title={title}
                     deadline={deadline}
                     place={place}
+                    priority={priority}
                     setEditTodoModalOpen={setEditTodoModalOpen}
                 />
             )}
@@ -139,11 +161,10 @@ const PriorityBox = styled.div`
 `;
 
 const Menu = styled.div`
-    position: absolute;
+    position: relative;
     color: black;
     background: white;
     border: 0.5px solid #3a86ff;
-    right: 1rem;
 `;
 
 const MenuItem = styled.div`

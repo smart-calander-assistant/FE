@@ -3,6 +3,12 @@ import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import axios from '../api/axios';
 import { getAccessToken } from '../localstorage/auth';
+import SearchPlace from '../component/SearchPlace';
+import Swal from 'sweetalert2';
+import DatePicker from 'react-datepicker';
+import { ko } from 'date-fns/esm/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 
 const EditPlan = ({
     id,
@@ -12,35 +18,64 @@ const EditPlan = ({
     title,
     setEditPlanModalOpen,
 }) => {
-    const [titleInput, setTitleInput] = useState('');
-    const [startTimeInput, setStartTimeInput] = useState('');
-    const [endTimeInput, setEndTimeInput] = useState('');
-    const [placeInput, setPlaceInput] = useState('');
+    const [titleInput, setTitleInput] = useState(title);
+    const [startTimeInput, setStartTimeInput] = useState(new Date(start_time));
+    const [endTimeInput, setEndTimeInput] = useState(new Date(end_time));
+    const [placeInput, setPlaceInput] = useState(place);
+    const [coordinates, setCoordinates] = useState({
+        latitude: 37.5050881,
+        longitude: 126.9571012,
+    });
     const accessToken = getAccessToken();
 
     useEffect(() => {
         // 컴포넌트가 마운트될 때, 기존 정보를 입력 필드에 표시
         setTitleInput(title);
-        setStartTimeInput(start_time);
-        setEndTimeInput(end_time);
+
+        // start_time과 end_time을 Date 객체로 변환하여 입력
+        setStartTimeInput(new Date(start_time));
+        setEndTimeInput(new Date(end_time));
+
         setPlaceInput(place);
     }, [title, start_time, end_time, place]);
 
+    const handlePlaceSelect = ({ place, coordinates }) => {
+        setPlaceInput(place);
+        setCoordinates(coordinates);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const editPlan = {
-            content: titleInput,
-            startTime: startTimeInput,
-            endTime: endTimeInput,
-            place: placeInput,
-            latitude: 0,
-            longitude: 0,
-        };
-
-        console.log('editPlan:', editPlan);
-
         try {
+            if (
+                titleInput === '' ||
+                startTimeInput === '' ||
+                endTimeInput === ''
+            ) {
+                Swal.fire({
+                    icon: 'error',
+                    text: '제목과 시간정보는 반드시 입력해야 합니다',
+                });
+                throw new Error(
+                    'titleInput, startTimeInput 또는 endTimeInput이 null입니다.'
+                );
+            }
+
+            // startTimeInput과 endTimeInput을 문자열로 다시 변환
+            const formattedStartTime = format(startTimeInput, 'yyyy-MM-dd HH:mm');
+            const formattedEndTime = format(endTimeInput, 'yyyy-MM-dd HH:mm');
+
+            const editPlan = {
+                content: titleInput,
+                startTime: formattedStartTime,
+                endTime: formattedEndTime,
+                place: placeInput,
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+            };
+
+            console.log('editPlan:', editPlan);
+
             // Axios를 사용하여 PUT 요청을 보냅니다.
             await axios.put(`/plan/${id}`, editPlan, {
                 headers: {
@@ -56,6 +91,14 @@ const EditPlan = ({
 
             // 모달 닫기
             setEditPlanModalOpen(false);
+
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Plan이 수정되었습니다',
+                showConfirmButton: false,
+                timer: 2000,
+            });
         } catch (error) {
             console.error('Plan 수정 중 오류 발생: ', error);
         }
@@ -72,48 +115,52 @@ const EditPlan = ({
                             onClick={() => setEditPlanModalOpen(false)}
                         />
                     </ModalTitle>
-                    <InputList onSubmit={handleSubmit}>
+                    <InputList>
                         <InputLabel>
                             <p>제목</p>
-                            <input
+                            <InputBox
                                 type='text'
-                                placeholder={title}
                                 value={titleInput}
+                                placeholder={title}
                                 onChange={(e) => setTitleInput(e.target.value)}
                             />
                         </InputLabel>
                         <InputLabel>
                             <p>시작날짜</p>
-                            <input
-                                type='text'
-                                placeholder={start_time}
-                                value={startTimeInput}
-                                onChange={(e) =>
-                                    setStartTimeInput(e.target.value)
-                                }
+                            <DateContainer
+                                selected={startTimeInput}
+                                onChange={(date) => setStartTimeInput(date)}
+                                locale={ko}
+                                showTimeSelect
+                                timeFormat='p'
+                                timeIntervals={30}
+                                dateFormat='yyyy-MM-dd HH:mm'
+                                placeholderText={start_time}
                             />
                         </InputLabel>
                         <InputLabel>
                             <p>종료날짜</p>
-                            <input
-                                type='text'
-                                placeholder={end_time}
-                                value={endTimeInput}
-                                onChange={(e) =>
-                                    setEndTimeInput(e.target.value)
-                                }
+                            <DateContainer
+                                selected={endTimeInput}
+                                onChange={(date) => setEndTimeInput(date)}
+                                locale={ko}
+                                showTimeSelect
+                                timeFormat='p'
+                                timeIntervals={30}
+                                dateFormat='yyyy-MM-dd HH:mm'
+                                placeholderText={end_time}
                             />
                         </InputLabel>
                         <InputLabel>
                             <p>장소</p>
-                            <input
-                                type='text'
+                            <SearchPlace
+                                onPlaceSelect={handlePlaceSelect}
                                 placeholder={place}
-                                value={placeInput}
-                                onChange={(e) => setPlaceInput(e.target.value)}
                             />
                         </InputLabel>
-                        <button type='submit'>Plan 수정하기</button>
+                        <SubmitButton onClick={handleSubmit}>
+                            Plan 수정하기
+                        </SubmitButton>
                     </InputList>
                 </ModalContainer>
             </RootContainer>
@@ -133,9 +180,8 @@ const RootContainer = styled.div`
     inset: 0;
     background-color: rgb(0 0 0 / 30%);
     -webkit-tap-highlight-color: transparent;
-    display: flex;
     justify-content: center;
-    padding: 6rem 3rem;
+    padding: 6rem 1.5rem;
 `;
 
 const ModalContainer = styled.div`
@@ -161,16 +207,45 @@ const ModalDetail = styled.p`
     font-size: 1.5rem;
 `;
 
-const InputList = styled.form`
+const InputList = styled.div`
     display: flex;
     flex-direction: column;
+    gap: 1rem;
 
-    margin: 1rem 0;
+    margin-top: 1rem;
 `;
 
-const InputLabel = styled.label`
+const InputLabel = styled.div`
     display: flex;
-    gap: 1rem;
-    height: 4rem;
-    justify-content: cetner;
+    flex-direction: column;
+    font-size: medium;
+    margin: 0.5rem 0;
+    gap: 0.5rem;
+`;
+
+const InputBox = styled.input`
+    border: 0.1rem solid #de496e;
+    border-radius: 0.5rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+`;
+
+const SubmitButton = styled.button`
+    background-color: #0acf83;
+    color: black;
+    font-size: large;
+    border: 0.1rem solid #0acf83;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+
+    &:hover {
+        opacity: 0.7;
+    }
+`;
+
+const DateContainer = styled(DatePicker)`
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #de496e;
 `;
