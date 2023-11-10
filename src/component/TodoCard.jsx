@@ -63,22 +63,22 @@ const TodoCard = ({
     };
 
     const handleCompleteClick = () => {
-        isCompleted = false;
+        isCompleted = !isCompleted;
         setIsMenuOpen(false);
         Swal.fire({
             position: 'center',
             icon: 'success',
-            title: '해당 Todo가 완료되었습니다',
+            title: '작업상태 수정완료',
             showConfirmButton: false,
             timer: 2000,
         });
-        console.log('작업완료');
+        console.log('작업완료여부 수정');
         onComplete(id, isCompleted);
     };
 
     return (
         <TodoContainer>
-            <HeaderBox>
+            <HeaderBox isCompleted={isCompleted}>
                 <PriorityBox>
                     <IoFlagSharp size={'1rem'} />
                     {!isCompleted && <p>Todo 미완료</p>}
@@ -97,14 +97,19 @@ const TodoCard = ({
                             삭제하기
                         </MenuItem>
                         <MenuItem onClick={handleCompleteClick}>
-                            작업완료
+                            {isCompleted ? '작업미완료': '작업완료'}
                         </MenuItem>
                     </Menu>
                 )}
             </HeaderBox>
             <ContentBox>
                 <TitleBox>
-                    <IoListCircleOutline size={'1.5rem'} color={'#DE496E'} />
+                    <IoListCircleOutline
+                        isCompleted={isCompleted}
+                        size={'1.5rem'}
+                        color={isCompleted ? '#8572FF' : '#DE496E'
+                        }
+                    />
                     <p>{title}</p>
                 </TitleBox>
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
@@ -145,7 +150,7 @@ const HeaderBox = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem 0 0.5rem;
-    background-color: #de496e;
+    background-color: ${(props) => (props.isCompleted ? '#8572FF' : '#de496e')};
     border-radius: 0.5rem 0.5rem 0 0;
     height: 2.5rem;
 
