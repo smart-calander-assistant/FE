@@ -9,9 +9,10 @@ import axios from '../api/axios';
 import { getAccessToken } from '../localstorage/auth';
 
 export default function Todoplan() {
-    const [data, setData] = useState([]);
+    const [remainTodo, setRemainTodo] = useState([]);
+    const [completedTodo, setCompletedTodo] = useState([]);
+    const [remainPlan, setRemainPlan] = useState([]);
     const [showTodoList, setShowTodoList] = useState(true);
-    const [isComplete, setIsComplete] = useState(false);
     const accessToken = getAccessToken();
 
     useEffect(() => {
@@ -24,22 +25,39 @@ export default function Todoplan() {
             try {
                 if (showTodoList) {
                     // showTodoList가 true일 때는 Todo 데이터를 가져옵니다.
-                    const response = await axios.get(`${requests.fetchTodo}?complete=${isComplete}`, {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
-                        },
-                    });
-                    setData(response.data);
-                    console.log('Todo 데이터:', response.data);
+                    const remainTodo = await axios.get(
+                        `${requests.fetchTodo}?complete=${false}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                            },
+                        }
+                    );
+                    setRemainTodo(remainTodo.data);
+                    console.log('remainTodo 데이터:', remainTodo.data);
+
+                    const completedTodo = await axios.get(
+                        `${requests.fetchTodo}?complete=${true}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                            },
+                        }
+                    );
+                    setCompletedTodo(completedTodo.data);
+                    console.log('completedTodo 데이터:', completedTodo.data);
                 } else {
                     // showTodoList가 false일 때는 Plan 데이터를 가져옵니다.
-                    const response = await axios.get(requests.fetchPlan, {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
-                        },
-                    });
-                    setData(response.data);
-                    console.log('Plan 데이터:', response.data);
+                    const remainPlan = await axios.get(
+                        `${requests.fetchPlan}?complete=${false}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                            },
+                        }
+                    );
+                    setRemainPlan(remainPlan.data);
+                    console.log('remainPlan 데이터:', remainPlan.data);
                 }
             } catch (error) {
                 console.error('데이터 가져오기 오류:', error);
@@ -50,7 +68,8 @@ export default function Todoplan() {
     }, [accessToken, showTodoList]);
 
     const handleEditPlan = (planId) => {
-        axios.get(`/plan/${planId}`, {
+        axios
+            .get(`/plan/${planId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -65,18 +84,20 @@ export default function Todoplan() {
     };
 
     const handleDeletePlan = (planId) => {
-        axios.delete(`/plan/${planId}`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        })
-        .catch((error) => {
-            console.error('Plan 삭제 중 오류 발생: ', error);
-        });
+        axios
+            .delete(`/plan/${planId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .catch((error) => {
+                console.error('Plan 삭제 중 오류 발생: ', error);
+            });
     };
 
     const handleEditTodo = (todoId) => {
-        axios.get(`/todo/${todoId}`, {
+        axios
+            .get(`/todo/${todoId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -91,25 +112,27 @@ export default function Todoplan() {
     };
 
     const handleDeleteTodo = (todoId) => {
-        axios.delete(`/todo/${todoId}`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        })
-        .catch((error) => {
-            console.error('Todo 삭제 중 오류 발생: ', error);
-        });
+        axios
+            .delete(`/todo/${todoId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .catch((error) => {
+                console.error('Todo 삭제 중 오류 발생: ', error);
+            });
     };
 
     const handleCompleteTodo = (todoId, isCompleted) => {
-        axios.patch(`/todo/${todoId}`, isCompleted, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        })
-        .catch((error) => {
-            console.error('Todo 패치 중 오류 발생: ', error);
-        });
+        axios
+            .patch(`/todo/${todoId}`, isCompleted, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .catch((error) => {
+                console.error('Todo 패치 중 오류 발생: ', error);
+            });
     };
 
     return (
@@ -131,21 +154,25 @@ export default function Todoplan() {
             </TodoPlanContainer>
             <ContentWrapper active={showTodoList}>
                 {showTodoList
-                    ? data.map((item) => (
-                          <TodoCard
-                              id={item.id}
-                              title={item.content}
-                              deadline={item.deadline}
-                              priority={item.priority}
-                              place={item.place}
-                              isCompleted={item.complete}
-                              onEdit={handleEditTodo}
-                              onDelete={handleDeleteTodo}
-                              onComplete={handleCompleteTodo}
-                          />
-                      ))
-                    : data.map((item) => (
+                    ? remainTodo
+                          .concat(completedTodo)
+                          .map((item) => (
+                              <TodoCard
+                                  key={item.id}
+                                  id={item.id}
+                                  title={item.content}
+                                  deadline={item.deadline}
+                                  priority={item.priority}
+                                  place={item.place}
+                                  isCompleted={item.complete}
+                                  onEdit={handleEditTodo}
+                                  onDelete={handleDeleteTodo}
+                                  onComplete={handleCompleteTodo}
+                              />
+                          ))
+                    : remainPlan.map((item) => (
                           <PlanCard
+                              key={item.id}
                               id={item.id}
                               title={item.content}
                               start_time={item.startTime}

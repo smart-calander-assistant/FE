@@ -105,8 +105,12 @@ const ScheduleRecommend = ({ setScheduleRecommendModalOpen }) => {
                                 timeFormat='p'
                                 timeIntervals={30}
                                 dateFormat='yyyy-MM-dd'
-                                placeholderText='종료시간을 선택하세요'
+                                placeholderText='종료기간을 선택하세요'
                             />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>교통수단 선택</p>
+                            
                         </InputLabel>
                         <SubmitButton onClick={handleSubmit}>
                             일정 추천받기
