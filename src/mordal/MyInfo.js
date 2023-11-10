@@ -4,36 +4,37 @@ import { styled } from 'styled-components';
 import requests from '../api/requests';
 import { IoClose } from 'react-icons/io5';
 import Swal from 'sweetalert2';
+import DatePicker from 'react-datepicker';
+import { ko } from 'date-fns/esm/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 
-export default function MyInfo({ setMyInfoModalOpen }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+export default function MyInfo({ setMyInfoModalOpen, sleep_start, sleep_end, good_start, good_end, bad_start, bad_end }) {
+    const [sleepStart, setSleepStart] = useState(sleep_start);
+    const [sleepEnd, setSleepEnd] = useState(sleep_end);
+    const [goodStartTime, setGoodStartTime] = useState(good_start);
+    const [goodEndTime, setGoodEndTime] = useState(good_end);
+    const [badStartTime, setBadStartTime] = useState(bad_start);
+    const [badEndTime, setBadEndTime] = useState(bad_end);
 
-    const handleRegister = async () => {
+    const handleSubmit = async () => {
         try {
-            const response = await axios.post(requests.fetchSignup, {
-                email,
-                password,
-            });
+            await axios.post(requests.fetchLife, {});
+            setMyInfoModalOpen(false);
 
-            if (response.data.email) {
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: '회원가입에 성공했습니다',
-                    showConfirmButton: false,
-                    timer: 2000,
-                });
-                console.log('회원가입 성공');
-            } else {
-                console.log('회원가입 실패:', response.data);
-            }
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: '업데이트 성공',
+                showConfirmButton: false,
+                timer: 2000,
+            });
         } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    text: '이미 가입된 이메일입니다. 다른 이메일을 사용해주세요',
-                });
-            console.error('회원가입 오류:', error);
+            Swal.fire({
+                icon: 'error',
+                text: '정보 업데이트에 실패했습니다',
+            });
+            console.error('업데이트 오류: ', error);
         }
     };
 
@@ -48,26 +49,89 @@ export default function MyInfo({ setMyInfoModalOpen }) {
                             onClick={() => setMyInfoModalOpen(false)}
                         />
                     </ModalTitle>
-                        <InputList>
-                            <InputLabel>
-                            <p>이메일</p>
-                            <InputBox
-                                type='email'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder='이메일을 입력해주세요'
-                                />
-                                </InputLabel>
-                            <InputBox
-                                type='password'
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder='비밀번호를 입력해주세요'
+                    <InputList>
+                        <InputLabel>
+                            <p>수면시간</p>
+                            <DateContainer
+                                selected={sleepStart}
+                                onChange={(date) => setSleepStart(date)}
+                                locale={ko}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeFormat='p'
+                                timeIntervals={60}
+                                dateFormat='HH:mm'
+                                placeholderText={sleep_start}
                             />
-                        <SubmitButton onClick={handleRegister}>
-                            회원가입
+                            <p> ~ </p>
+                            <DateContainer
+                                selected={sleepEnd}
+                                onChange={(date) => setSleepEnd(date)}
+                                locale={ko}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeFormat='p'
+                                timeIntervals={60}
+                                dateFormat='HH:mm'
+                                placeholderText={sleep_end}
+                            />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>집중 잘되는 시간</p>
+                            <DateContainer
+                                selected={goodStartTime}
+                                onChange={(date) => setGoodStartTime(date)}
+                                locale={ko}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeFormat='p'
+                                timeIntervals={60}
+                                dateFormat='HH:mm'
+                                placeholderText={good_start}
+                            />
+                            <p> ~ </p>
+                            <DateContainer
+                                selected={goodEndTime}
+                                onChange={(date) => setGoodEndTime(date)}
+                                locale={ko}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeFormat='p'
+                                timeIntervals={60}
+                                dateFormat='HH:mm'
+                                placeholderText={good_end}
+                            />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>집중 잘 안되는 시간</p>
+                            <DateContainer
+                                selected={badStartTime}
+                                onChange={(date) => setBadStartTime(date)}
+                                locale={ko}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeFormat='p'
+                                timeIntervals={60}
+                                dateFormat='HH:mm'
+                                placeholderText={bad_start}
+                            />
+                            <p> ~ </p>
+                            <DateContainer
+                                selected={badEndTime}
+                                onChange={(date) => setBadEndTime(date)}
+                                locale={ko}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeFormat='p'
+                                timeIntervals={60}
+                                dateFormat='HH:mm'
+                                placeholderText={bad_end}
+                            />
+                        </InputLabel>
+                        <SubmitButton onClick={handleSubmit}>
+                            정보 업데이트
                         </SubmitButton>
-                        </InputList>
+                    </InputList>
                 </ModalContainer>
             </RootContainer>
         </ViewContainer>
@@ -85,7 +149,7 @@ const RootContainer = styled.div`
     background-color: rgb(0 0 0 / 30%);
     -webkit-tap-highlight-color: transparent;
     justify-content: center;
-    padding: 16rem 1.5rem;
+    padding: 6rem 1.5rem;
 `;
 
 const ModalContainer = styled.div`
@@ -145,4 +209,11 @@ const SubmitButton = styled.button`
     &:hover {
         opacity: 0.7;
     }
+`;
+
+const DateContainer = styled(DatePicker)`
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid #de496e;
 `;

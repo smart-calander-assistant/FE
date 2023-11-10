@@ -5,7 +5,7 @@ const requests = {
     // Todo 관련 API
     fetchTodo: '/todo',
     // LifePattern 관련 API
-
+    fetchLife: '/life',
     // Auth 관련 API
     fetchLogin: '/auth/login',      // Post
     fetchLogout: '/auth/logout',    // Post

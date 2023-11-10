@@ -1,41 +1,45 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const DayCard = ({ day, date, index }) => {
-    if (index === 3) {
-        return (
-            <DayContainer>
-                <DayBox index={index}>
-                    <p style={{ fontSize: 'larger' }}>{date}</p>
-                    <p style={{ fontSize: 'small' }}>{day}</p>
-                </DayBox>
-            </DayContainer>
-        );
-    } else {
-        return (
-            <DayBox index={index}>
-                <p style={{ fontSize: 'larger' }}>{date}</p>
-                <p style={{ fontSize: 'small' }}>{day}</p>
+const DayCard = ({ day, date, selected, onClick }) => {
+    return (
+        <DayContainer selected={selected} onClick={onClick}>
+            <DayBox>
+                <DateText selected={selected}>{date}</DateText>
+                <DayText selected={selected}>{day}</DayText>
             </DayBox>
-        );
-    }
+        </DayContainer>
+    );
 };
 
 export default DayCard;
 
 const DayContainer = styled.div`
-    background-color: #ffc8c8;
+    background-color: ${(props) => (props.selected ? '#ffc8c8' : '#f5f5f5' )};
     border-radius: 0.5rem;
-`
+`;
 
 const DayBox = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 3rem;
     height: 4rem;
-
+    width: 3rem;
     font-weight: 800;
-    color: ${(props) => (props.index === 3 ? '#DE496E' : 'black')};
+    transition: background-color 0.3s, color 0.3s;
 `;
+
+const DateText = styled.p`
+    color: ${(props) => (props.selected ? '#DE496E' : 'black')};
+    font-size: larger;
+`;
+
+const DayText = styled.p`
+    color: ${(props) => (props.selected ? '#DE496E' : '#94A3B8')};
+    font-size: small;
+`;
+
+
+
+

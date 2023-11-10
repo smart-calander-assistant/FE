@@ -140,6 +140,7 @@ export default Login;
 const LoginContainer = styled.div`
   background-color: #0acf83;
   height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;

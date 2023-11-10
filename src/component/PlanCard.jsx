@@ -96,7 +96,7 @@ const PlanCard = ({
                     </AlarmBox>
                     <TimeBox>
                         <p>
-                            {start_time}~{end_time}
+                            {start_time} ~ {end_time}
                         </p>
                     </TimeBox>
                 </TimeContainer>

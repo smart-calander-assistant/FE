@@ -1,23 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Footer from '../component/Footer';
 import styled from 'styled-components';
 import Header from '../component/Header';
 import ScheduleContent from '../component/ScheduleContent';
-import { IoDesktop, IoDesktopOutline } from 'react-icons/io5';
 import DayCard from '../component/DayCard';
 import TransfortationContent from '../component/TransfortationContent';
 import TimeTable from '../component/TimeTable';
 
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+import 'swiper/swiper.min.css';
+import 'swiper/components/navigation/navigation.min.css';
+import 'swiper/components/pagination/pagination.min.css';
+import 'swiper/components/scrollbar/scrollbar.min.css';
+
 export default function Schedule() {
-    const dayList = [
-        { day: '월', date: 18 },
-        { day: '화', date: 19 },
-        { day: '수', date: 20 },
-        { day: '목', date: 21 },
-        { day: '금', date: 22 },
-        { day: '토', date: 23 },
-        { day: '일', date: 24 },
-    ];
+    const currentDate = new Date();
+
+    const [dayList, setDayList] = useState([]);
+    const [selectedDay, setSelectedDay] = useState(new Date(currentDate).getDate());
+    // const [scheduleList, setScheduleList] = useState([]);
+    const dayKoList = ['일', '월', '화', '수', '목', '금', '토'];
+
+    useEffect(() => {
+        const twoWeeksLater = new Date(currentDate);
+        twoWeeksLater.setDate(currentDate.getDate() + 14);
+
+        // 현재 날짜부터 2주 후까지의 모든 날짜를 생성합니다.
+        const dayList = [];
+        let currentDateCopy = new Date(currentDate);
+        while (currentDateCopy <= twoWeeksLater) {
+            dayList.push({
+                day: dayKoList[currentDateCopy.getDay()],
+                date: currentDateCopy.getDate(),
+            });
+
+            currentDateCopy.setDate(currentDateCopy.getDate() + 1);
+        }
+
+        setDayList(dayList);
+
+        // scheduleList 초기화나 API에서 스케줄 목록을 가져오는 코드
+        // ...
+    }, []);
 
     const scheduleList = [
         {
@@ -58,24 +84,46 @@ export default function Schedule() {
         { time: 20, start_time: '22:00', end_time: '22:20', type: 'onfoot' },
     ];
 
-    const startTime = '08:00';
-    const endTime = '22:00';
+    const handleDayClick = (day) => {
+        setSelectedDay(day);
+    };
 
     return (
         <RootContainer>
             <Header label={'일정 확인'} />
             <DayContainer>
-                {dayList.map((item, index) => (
-                    <DayCard day={item.day} date={item.date} index={index} />
-                ))}
+                <Swiper
+                    modules={[Navigation, Pagination, Scrollbar, A11y]}
+                    loop={false} // loop 기능을 사용할 것인지
+                    breakpoints={{ 0: {
+                        slidesPerView: 7, // 한번에 보이는 슬라이드 개수
+                        slidesPerGroup: 7, // 몇개씩 슬라이드 할지
+                        },
+                    }}
+                >
+                    {dayList.map((item) => (
+                        <SwiperSlide>
+                            <DayCard
+                                day={item.day}
+                                date={item.date}
+                                selected={selectedDay === item.date}
+                                onClick={() => handleDayClick(item.date)}
+                            />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
             </DayContainer>
             <ContentWrapper>
-            <ScheduleContainer>
+                <ScheduleContainer>
                     {scheduleList.map((item, index) => {
                         let time_diff;
                         if (index < scheduleList.length - 1) {
-                            const nextStartTime = scheduleList[index + 1].start_time;
-                            time_diff = calculateTimeDifference(item.end_time, nextStartTime);
+                            const nextStartTime =
+                                scheduleList[index + 1].start_time;
+                            time_diff = calculateTimeDifference(
+                                item.end_time,
+                                nextStartTime
+                            );
                         } else {
                             time_diff = 0;
                         }
@@ -105,7 +153,6 @@ export default function Schedule() {
                         }
                     })}
                 </ScheduleContainer>
-                {/* <TimeTable startTime={startTime} endTime={endTime} timeInterval={60} scheduleList={scheduleList}/> */}
             </ContentWrapper>
             <Footer label={'schedule'} />
         </RootContainer>
@@ -125,14 +172,15 @@ const RootContainer = styled.div`
     display: flex;
     flex-direction: column;
     height: 100vh;
+    width: 100vw;
 `;
 
 const DayContainer = styled.div`
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
     margin-bottom: 0.5rem;
+    scroll-behavior: smooth;
 `;
 
 const ContentWrapper = styled.div`
