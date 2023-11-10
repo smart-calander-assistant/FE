@@ -7,9 +7,18 @@ import Swal from 'sweetalert2';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
+import { getAccessToken } from '../localstorage/auth';
 import { format } from 'date-fns';
 
-export default function MyInfo({ setMyInfoModalOpen, sleep_start, sleep_end, good_start, good_end, bad_start, bad_end }) {
+export default function MyInfo({
+    setMyInfoModalOpen,
+    sleep_start,
+    sleep_end,
+    good_start,
+    good_end,
+    bad_start,
+    bad_end,
+}) {
     const [sleepStart, setSleepStart] = useState(sleep_start);
     const [sleepEnd, setSleepEnd] = useState(sleep_end);
     const [goodStartTime, setGoodStartTime] = useState(good_start);
@@ -17,9 +26,24 @@ export default function MyInfo({ setMyInfoModalOpen, sleep_start, sleep_end, goo
     const [badStartTime, setBadStartTime] = useState(bad_start);
     const [badEndTime, setBadEndTime] = useState(bad_end);
 
+    const accessToken = getAccessToken();
+
     const handleSubmit = async () => {
+        const newMyInfo = {
+            sleep_start: sleepStart,
+            sleep_end: sleepEnd,
+            good_start: goodStartTime,
+            good_end: goodEndTime,
+            bad_start: badStartTime,
+            bad_end: badEndTime,
+        };
+
         try {
-            await axios.post(requests.fetchLife, {});
+            await axios.post(requests.fetchLife, newMyInfo, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                },
+            });
             setMyInfoModalOpen(false);
 
             Swal.fire({
@@ -184,8 +208,6 @@ const InputList = styled.div`
 `;
 
 const InputLabel = styled.div`
-    display: flex;
-    flex-direction: column;
     font-size: medium;
     margin: 0.5rem 0;
     gap: 0.5rem;

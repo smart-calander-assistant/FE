@@ -24,16 +24,17 @@ export default function Schedule() {
     const dayKoList = ['일', '월', '화', '수', '목', '금', '토'];
 
     useEffect(() => {
-        const twoWeeksLater = new Date(currentDate);
-        twoWeeksLater.setDate(currentDate.getDate() + 14);
+        const monthLater = new Date(currentDate);
+        monthLater.setDate(currentDate.getDate() + 28);
 
-        // 현재 날짜부터 2주 후까지의 모든 날짜를 생성합니다.
+        // 현재 날짜부터 4주까지의 모든 날짜를 생성합니다.
         const dayList = [];
         let currentDateCopy = new Date(currentDate);
-        while (currentDateCopy <= twoWeeksLater) {
+        while (currentDateCopy <= monthLater) {
             dayList.push({
                 day: dayKoList[currentDateCopy.getDay()],
                 date: currentDateCopy.getDate(),
+                month: currentDateCopy.getMonth(),
             });
 
             currentDateCopy.setDate(currentDateCopy.getDate() + 1);
@@ -97,7 +98,7 @@ export default function Schedule() {
                     loop={false} // loop 기능을 사용할 것인지
                     breakpoints={{ 0: {
                         slidesPerView: 7, // 한번에 보이는 슬라이드 개수
-                        slidesPerGroup: 7, // 몇개씩 슬라이드 할지
+                        slidesPerGroup: 5, // 몇개씩 슬라이드 할지
                         },
                     }}
                 >
@@ -106,6 +107,7 @@ export default function Schedule() {
                             <DayCard
                                 day={item.day}
                                 date={item.date}
+                                month={item.month}
                                 selected={selectedDay === item.date}
                                 onClick={() => handleDayClick(item.date)}
                             />
