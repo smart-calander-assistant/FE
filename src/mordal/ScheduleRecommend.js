@@ -4,48 +4,23 @@ import { IoClose } from 'react-icons/io5';
 import axios from '../api/axios';
 import requests from '../api/requests';
 import { getAccessToken } from '../localstorage/auth';
-import SearchPlace from '../component/SearchPlace';
 import Swal from 'sweetalert2';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 
-const AddPlan = ({ setAddPlanModalOpen }) => {
-    const [titleInput, setTitleInput] = useState('');
-    const [startTimeInput, setStartTimeInput] = useState('');
+const ScheduleRecommend = ({ setScheduleRecommendModalOpen }) => {
+    const [startTimeInput, setStartTimeInput] = useState(new Date());
     const [endTimeInput, setEndTimeInput] = useState('');
-    const [placeInput, setPlaceInput] = useState('');
     const accessToken = getAccessToken();
-    const [coordinates, setCoordinates] = useState({
-        latitude: 37.5050881,
-        longitude: 126.9571012,
-    });
-
-    const handlePlaceSelect = ({ place, coordinates }) => {
-        setPlaceInput(place);
-        setCoordinates(coordinates);
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (
-                titleInput === '' ||
-                startTimeInput === '' ||
-                endTimeInput === ''
-            ) {
-                Swal.fire({
-                    icon: 'error',
-                    text: '제목과 시간정보는 반드시 입력해야 합니다',
-                });
-                return;
-            }
-
             const startDate = new Date(startTimeInput);
             const endDate = new Date(endTimeInput);
 
-            // 시작 시간이 종료 시간보다 늦으면 에러 처리
             if (startDate >= endDate) {
                 Swal.fire({
                     icon: 'error',
@@ -53,21 +28,13 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
                 });
                 return;
             }
-            
-            const formattedStartTime = format(
-                startTimeInput,
-                'yyyy-MM-dd HH:mm'
-            );
 
-            const formattedEndTime = format(endTimeInput, 'yyyy-MM-dd HH:mm');
+            const formattedStartTime = format(startTimeInput, 'yyyy-MM-dd');
+            const formattedEndTime = format(endTimeInput, 'yyyy-MM-dd');
 
             const newPlan = {
-                content: titleInput,
                 startTime: formattedStartTime,
                 endTime: formattedEndTime,
-                place: placeInput,
-                latitude: coordinates.latitude,
-                longitude: coordinates.longitude,
             };
 
             console.log('newPlan:', newPlan);
@@ -80,24 +47,28 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
             });
 
             // 입력값 초기화
-            setTitleInput('');
             setStartTimeInput('');
             setEndTimeInput('');
-            setPlaceInput('');
-            setCoordinates({ latitude: 37.5050881, longitude: 126.9571012 });
 
             // 모달 닫기
-            setAddPlanModalOpen(false);
+            setScheduleRecommendModalOpen(false);
 
             Swal.fire({
                 position: 'center',
+                icon: 'question',
+                title: '일정 생성 중입니다...',
+                showConfirmButton: false,
+                timer: 10000,
+            });
+            Swal.fire({
+                position: 'center',
                 icon: 'success',
-                title: 'Plan이 추가되었습니다',
+                title: '일정 생성 완료',
                 showConfirmButton: false,
                 timer: 2000,
             });
         } catch (error) {
-            console.error('Plan 추가 중 오류 발생: ', error);
+            console.error('일정 추천 중 오류 발생: ', error);
         }
     };
 
@@ -106,33 +77,23 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
             <RootContainer>
                 <ModalContainer>
                     <ModalTitle>
-                        <ModalDetail>Plan 추가하기</ModalDetail>
+                        <ModalDetail>일정 추천받기</ModalDetail>
                         <IoClose
                             size={'2rem'}
-                            onClick={() => setAddPlanModalOpen(false)}
+                            onClick={() => setScheduleRecommendModalOpen(false)}
                         />
                     </ModalTitle>
                     <InputList>
-                        <InputLabel>
-                            <p>제목</p>
-                            <InputBox
-                                type='text'
-                                value={titleInput}
-                                placeholder={'제목을 입력하세요'}
-                                onChange={(e) => setTitleInput(e.target.value)}
-                            />
-                        </InputLabel>
                         <InputLabel>
                             <p>시작날짜</p>
                             <DateContainer
                                 selected={startTimeInput}
                                 onChange={(date) => setStartTimeInput(date)}
                                 locale={ko}
-                                showTimeSelect
                                 timeFormat='p'
                                 timeIntervals={30}
-                                dateFormat='yyyy-MM-dd HH:mm'
-                                placeholderText='시작시간을 선택하세요'
+                                dateFormat='yyyy-MM-dd'
+                                placeholderText={startTimeInput}
                             />
                         </InputLabel>
                         <InputLabel>
@@ -141,22 +102,14 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
                                 selected={endTimeInput}
                                 onChange={(date) => setEndTimeInput(date)}
                                 locale={ko}
-                                showTimeSelect
                                 timeFormat='p'
                                 timeIntervals={30}
-                                dateFormat='yyyy-MM-dd HH:mm'
+                                dateFormat='yyyy-MM-dd'
                                 placeholderText='종료시간을 선택하세요'
                             />
                         </InputLabel>
-                        <InputLabel>
-                            <p>장소</p>
-                            <SearchPlace
-                                onPlaceSelect={handlePlaceSelect}
-                                placeholder={'장소를 입력하세요'}
-                            />
-                        </InputLabel>
                         <SubmitButton onClick={handleSubmit}>
-                            Plan 추가하기
+                            일정 추천받기
                         </SubmitButton>
                     </InputList>
                 </ModalContainer>
@@ -165,7 +118,7 @@ const AddPlan = ({ setAddPlanModalOpen }) => {
     );
 };
 
-export default AddPlan;
+export default ScheduleRecommend;
 
 const ViewContainer = styled.div`
     z-index: 1;

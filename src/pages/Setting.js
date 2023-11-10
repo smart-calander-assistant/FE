@@ -8,6 +8,8 @@ import { removeAccessToken, getAccessToken } from '../localstorage/auth';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import MyInfo from '../mordal/MyInfo';
+import axios from '../api/axios';
+import requests from '../api/requests';
 
 export default function Setting() {
   const [day, successDay] = [12, 8];
@@ -19,6 +21,8 @@ export default function Setting() {
 
   const navigate = useNavigate();
 
+  const accessToken = getAccessToken();
+
   const handleLogout = () => {
     Swal.fire({
       title: "정말 로그아웃 하시겠습니까?",
@@ -29,7 +33,6 @@ export default function Setting() {
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
-        const accessToken = getAccessToken();
         removeAccessToken(accessToken);
         Swal.fire("로그아웃 완료", "로그인 페이지로 돌아갑니다", "success").then(() => {
             navigate('/');
@@ -39,8 +42,20 @@ export default function Setting() {
     });
   };
 
-  const handleChange = () => {
-
+  const handleInfoClick = async () => {
+    axios.get(requests.fetchLife, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    })
+    .then((response) => {
+        const todoData = response.data;
+        console.log('내 정보:', todoData);
+    })
+    .catch((error) => {
+        console.error('내 정보 확인 중 오류 발생: ', error);
+    });
+    setMyInfoModalOpen(true);
   }
 
   return (
@@ -67,7 +82,7 @@ export default function Setting() {
             type={"achievement"}
           />
         </RecordContainer>
-        <ExplainContent title={"내 정보"} content={"개인정보를 입력해주세요"} />
+        <ExplainContent title={"내 정보"} content={"개인정보를 입력해주세요"} onClick={handleInfoClick}/>
         {myInfoModalOpen && (<MyInfo setMyInfoModalOpen={setMyInfoModalOpen} />)}
         <ExplainContent title={"일정 기록 초기화"} content={"일정 기록 현황을 전부 초기화할 수 있습니다!!"} />
         <ExplainContent title={"로그아웃"} content={"로그아웃하려면 아래 버튼을 클릭하세요"} onClick={handleLogout} />
@@ -82,6 +97,7 @@ const RootContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
 `;
 
 const RecordContainer = styled.div`
