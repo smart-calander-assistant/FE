@@ -115,10 +115,11 @@ const TodoCard = ({
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
-                    <AlarmBox>
+                    {!isCompleted && <AlarmBox>
                         <IoAlarmOutline size={'1rem'} />
                         <p>08:30 PM</p>
-                    </AlarmBox>
+                    </AlarmBox>}
+                    {isCompleted && <p>{' '}</p>}
                     <TimeBox>
                         <p>마감기한 : {deadline}</p>
                     </TimeBox>
