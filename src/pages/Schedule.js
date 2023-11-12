@@ -46,6 +46,10 @@ export default function Schedule() {
         // ...
     }, []);
 
+    useEffect(() => {
+        
+    }, [selectedDay])
+
     const scheduleList = [
         {
             title: 'aaaa',

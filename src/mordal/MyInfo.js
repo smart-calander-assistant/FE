@@ -1,5 +1,5 @@
 import axios from '../api/axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from 'styled-components';
 import requests from '../api/requests';
 import { IoClose } from 'react-icons/io5';
@@ -19,31 +19,106 @@ export default function MyInfo({
     bad_start,
     bad_end,
 }) {
-    const [sleepStart, setSleepStart] = useState(sleep_start);
-    const [sleepEnd, setSleepEnd] = useState(sleep_end);
-    const [goodStartTime, setGoodStartTime] = useState(good_start);
-    const [goodEndTime, setGoodEndTime] = useState(good_end);
-    const [badStartTime, setBadStartTime] = useState(bad_start);
-    const [badEndTime, setBadEndTime] = useState(bad_end);
+    const [sleepStart, setSleepStart] = useState(new Date(sleep_start));
+    const [sleepEnd, setSleepEnd] = useState(new Date(sleep_end));
+    const [goodStart, setGoodStart] = useState(new Date(good_start));
+    const [goodEnd, setGoodEnd] = useState(new Date(good_end));
+    const [badStart, setBadStart] = useState(new Date(bad_start));
+    const [badEnd, setBadEnd] = useState(new Date(bad_end));
 
     const accessToken = getAccessToken();
 
-    const handleSubmit = async () => {
-        const newMyInfo = {
-            sleep_start: sleepStart,
-            sleep_end: sleepEnd,
-            good_start: goodStartTime,
-            good_end: goodEndTime,
-            bad_start: badStartTime,
-            bad_end: badEndTime,
-        };
+    useEffect(() => {
+        // 컴포넌트가 마운트될 때, 기존 정보를 입력 필드에 표시
+        setSleepStart(new Date(sleep_start));
+        setSleepEnd(new Date(sleep_end));
+        setGoodStart(new Date(good_start));
+        setGoodEnd(new Date(good_end));
+        setBadStart(new Date(bad_start));
+        setBadEnd(new Date(bad_end));
+    }, [sleep_start, sleep_end, good_start, good_end, bad_start, bad_end]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            await axios.post(requests.fetchLife, newMyInfo, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
-                },
-            });
+            // const sleepStartDate = new Date(sleepStart);
+            // const sleepEndDate = new Date(sleepEnd);
+            const goodStartDate = new Date(goodStart);
+            const goodEndDate = new Date(goodEnd);
+            const badStartDate = new Date(badStart);
+            const badEndDate = new Date(badEnd);
+
+            if (goodStartDate >= goodEndDate || badStartDate >= badEndDate) {
+                Swal.fire({
+                    icon: 'error',
+                    text: '시작시간과 종료시간이 적절하지 않습니다',
+                });
+                return;
+            }
+
+            const formattedSleepStartTime = format(sleepStart, 'HH:mm');
+            const formattedSleepEndTime = format(sleepEnd, 'HH:mm');
+            const formattedFocusStartTime = format(goodStart, 'HH:mm');
+            const formattedFocusEndTime = format(goodEnd, 'HH:mm');
+            const formattedNotFocusStartTime = format(badStart, 'HH:mm');
+            const formattedNotFocusEndTime = format(badEnd, 'HH:mm');
+
+            const newMySleepInfo = {
+                id: 2,
+                life: 'SLEEPING_TIME',
+                startTime: formattedSleepStartTime,
+                endTime: formattedSleepEndTime,
+            };
+            const newMyFocusInfo = {
+                id: 3,
+                life: 'FOCUS_TIME',
+                startTime: formattedFocusStartTime,
+                endTime: formattedFocusEndTime,
+            };
+            const newMyNotFocusInfo = {
+                id: 4,
+                life: 'NOT_FOCUS_TIME',
+                startTime: formattedNotFocusStartTime,
+                endTime: formattedNotFocusEndTime,
+            };
+
+            await axios.put(
+                `${requests.fetchLife}/${newMySleepInfo.id}`,
+                newMySleepInfo,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            await axios.put(
+                `${requests.fetchLife}/${newMyFocusInfo.id}`,
+                newMyFocusInfo,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            await axios.put(
+                `${requests.fetchLife}/${newMyNotFocusInfo.id}`,
+                newMyNotFocusInfo,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            setSleepStart('');
+            setSleepEnd('');
+            setGoodStart('');
+            setGoodEnd('');
+            setBadStart('');
+            setBadEnd('');
+
             setMyInfoModalOpen(false);
 
             Swal.fire({
@@ -76,81 +151,87 @@ export default function MyInfo({
                     <InputList>
                         <InputLabel>
                             <p>수면시간</p>
-                            <DateContainer
-                                selected={sleepStart}
-                                onChange={(date) => setSleepStart(date)}
-                                locale={ko}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeFormat='p'
-                                timeIntervals={60}
-                                dateFormat='HH:mm'
-                                placeholderText={sleep_start}
-                            />
-                            <p> ~ </p>
-                            <DateContainer
-                                selected={sleepEnd}
-                                onChange={(date) => setSleepEnd(date)}
-                                locale={ko}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeFormat='p'
-                                timeIntervals={60}
-                                dateFormat='HH:mm'
-                                placeholderText={sleep_end}
-                            />
+                            <TimeBox>
+                                <DateContainer
+                                    selected={sleepStart}
+                                    onChange={(date) => setSleepStart(date)}
+                                    locale={ko}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeFormat='p'
+                                    timeIntervals={60}
+                                    dateFormat='HH:mm'
+                                    placeholderText={sleep_start}
+                                />
+                                <TimeWave> ~ </TimeWave>
+                                <DateContainer
+                                    selected={sleepEnd}
+                                    onChange={(date) => setSleepEnd(date)}
+                                    locale={ko}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeFormat='p'
+                                    timeIntervals={60}
+                                    dateFormat='HH:mm'
+                                    placeholderText={sleep_end}
+                                />
+                            </TimeBox>
                         </InputLabel>
                         <InputLabel>
                             <p>집중 잘되는 시간</p>
-                            <DateContainer
-                                selected={goodStartTime}
-                                onChange={(date) => setGoodStartTime(date)}
-                                locale={ko}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeFormat='p'
-                                timeIntervals={60}
-                                dateFormat='HH:mm'
-                                placeholderText={good_start}
-                            />
-                            <p> ~ </p>
-                            <DateContainer
-                                selected={goodEndTime}
-                                onChange={(date) => setGoodEndTime(date)}
-                                locale={ko}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeFormat='p'
-                                timeIntervals={60}
-                                dateFormat='HH:mm'
-                                placeholderText={good_end}
-                            />
+                            <TimeBox>
+                                <DateContainer
+                                    selected={goodStart}
+                                    onChange={(date) => setGoodStart(date)}
+                                    locale={ko}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeFormat='p'
+                                    timeIntervals={60}
+                                    dateFormat='HH:mm'
+                                    placeholderText={good_start}
+                                />
+                                <TimeWave> ~ </TimeWave>
+                                <DateContainer
+                                    selected={goodEnd}
+                                    onChange={(date) => setGoodEnd(date)}
+                                    locale={ko}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeFormat='p'
+                                    timeIntervals={60}
+                                    dateFormat='HH:mm'
+                                    placeholderText={good_end}
+                                />
+                            </TimeBox>
                         </InputLabel>
                         <InputLabel>
                             <p>집중 잘 안되는 시간</p>
-                            <DateContainer
-                                selected={badStartTime}
-                                onChange={(date) => setBadStartTime(date)}
-                                locale={ko}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeFormat='p'
-                                timeIntervals={60}
-                                dateFormat='HH:mm'
-                                placeholderText={bad_start}
-                            />
-                            <p> ~ </p>
-                            <DateContainer
-                                selected={badEndTime}
-                                onChange={(date) => setBadEndTime(date)}
-                                locale={ko}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeFormat='p'
-                                timeIntervals={60}
-                                dateFormat='HH:mm'
-                                placeholderText={bad_end}
-                            />
+                            <TimeBox>
+                                <DateContainer
+                                    selected={badStart}
+                                    onChange={(date) => setBadStart(date)}
+                                    locale={ko}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeFormat='p'
+                                    timeIntervals={60}
+                                    dateFormat='HH:mm'
+                                    placeholderText={bad_start}
+                                />
+                                <TimeWave> ~ </TimeWave>
+                                <DateContainer
+                                    selected={badEnd}
+                                    onChange={(date) => setBadEnd(date)}
+                                    locale={ko}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeFormat='p'
+                                    timeIntervals={60}
+                                    dateFormat='HH:mm'
+                                    placeholderText={bad_end}
+                                />
+                            </TimeBox>
                         </InputLabel>
                         <SubmitButton onClick={handleSubmit}>
                             정보 업데이트
@@ -208,16 +289,22 @@ const InputList = styled.div`
 `;
 
 const InputLabel = styled.div`
+    display: flex;
+    flex-direction: column;
     font-size: medium;
     margin: 0.5rem 0;
     gap: 0.5rem;
 `;
 
-const InputBox = styled.input`
-    border: 0.1rem solid #de496e;
-    border-radius: 0.5rem;
-    height: 2rem;
-    padding: 0 0.5rem;
+const TimeWave = styled.p`
+    font-size: large;
+    font-weight: 600;
+`;
+
+const TimeBox = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 const SubmitButton = styled.button`
@@ -235,7 +322,9 @@ const SubmitButton = styled.button`
 
 const DateContainer = styled(DatePicker)`
     height: 2rem;
+    width: 6rem;
     padding: 0 0.5rem;
     border-radius: 0.5rem;
     border: 0.1rem solid #de496e;
+    text-align: center;
 `;

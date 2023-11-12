@@ -61,6 +61,17 @@ const EditPlan = ({
                 );
             }
 
+            const startDate = new Date(startTimeInput);
+            const endDate = new Date(endTimeInput);
+            
+            if (startDate >= endDate) {
+                Swal.fire({
+                    icon: 'error',
+                    text: '시작 시간은 종료 시간보다 빨라야 합니다',
+                });
+                return;
+            }
+            
             // startTimeInput과 endTimeInput을 문자열로 다시 변환
             const formattedStartTime = format(startTimeInput, 'yyyy-MM-dd HH:mm');
             const formattedEndTime = format(endTimeInput, 'yyyy-MM-dd HH:mm');
@@ -248,4 +259,5 @@ const DateContainer = styled(DatePicker)`
     padding: 0 0.5rem;
     border-radius: 0.5rem;
     border: 0.1rem solid #de496e;
+    text-align: center;
 `;

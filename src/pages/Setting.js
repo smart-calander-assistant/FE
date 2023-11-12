@@ -18,11 +18,15 @@ export default function Setting() {
     const successTodoRate = ((successTodo / todo) * 100).toFixed(1);
     const recommended = 7;
     const [myInfoModalOpen, setMyInfoModalOpen] = useState(false);
-    const [myInfo, setMyInfo] = useState('');
+    const [mySleepInfo, setMySleepInfo] = useState('');
+    const [myFocusInfo, setMyFocusInfo] = useState('');
+    const [myNotFocusInfo, setMyNotFocusInfo] = useState('');
 
     const navigate = useNavigate();
 
     const accessToken = getAccessToken();
+
+    const defaultDate = '1970-01-01';
 
     const handleLogout = () => {
         Swal.fire({
@@ -49,14 +53,39 @@ export default function Setting() {
 
     const handleInfoClick = async () => {
         try {
-            const response = axios.get(requests.fetchLife, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            const mySleepInfo = await axios.get(
+                `${requests.fetchLife}?life=${'SLEEPING_TIME'}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            const myFocusInfo = await axios.get(
+                `${requests.fetchLife}?life=${'FOCUS_TIME'}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            const myNotFocusInfo = await axios.get(
+                `${requests.fetchLife}?life=${'NOT_FOCUS_TIME'}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
 
-            setMyInfo(response.data);
-            console.log('내 정보:', myInfo);
+                setMySleepInfo(mySleepInfo.data[0]);
+                setMyFocusInfo(myFocusInfo.data[0]);
+                setMyNotFocusInfo(myNotFocusInfo.data[0]);
+
+                console.log('mySleepInfo:', mySleepInfo.data[0]);
+                console.log('myFocusInfo:', myFocusInfo.data[0]);
+                console.log('myNotFocusInfo:', myNotFocusInfo.data[0]);
+
         } catch (error) {
             console.error('내 정보 확인 중 오류 발생: ', error);
         }
@@ -98,12 +127,12 @@ export default function Setting() {
                 {myInfoModalOpen && (
                     <MyInfo
                         setMyInfoModalOpen={setMyInfoModalOpen}
-                        sleep_start={myInfo.sleepStart}
-                        sleep_end={myInfo.sleepEnd}
-                        good_start={myInfo.goodStart}
-                        good_end={myInfo.goodEnd}
-                        bad_start={myInfo.badStart}
-                        bad_end={myInfo.badEnd}
+                        sleep_start={`${defaultDate} ${mySleepInfo.startTime}`}
+                        sleep_end={`${defaultDate} ${mySleepInfo.endTime}`}
+                        good_start={`${defaultDate} ${myFocusInfo.startTime}`}
+                        good_end={`${defaultDate} ${myFocusInfo.endTime}`}
+                        bad_start={`${defaultDate} ${myNotFocusInfo.startTime}`}
+                        bad_end={`${defaultDate} ${myNotFocusInfo.endTime}`}
                     />
                 )}
                 <ExplainContent
