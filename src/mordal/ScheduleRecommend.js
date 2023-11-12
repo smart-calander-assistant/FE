@@ -53,12 +53,27 @@ const ScheduleRecommend = ({ setScheduleRecommendModalOpen }) => {
             // 모달 닫기
             setScheduleRecommendModalOpen(false);
 
+            let timerInterval;
             Swal.fire({
-                position: 'center',
-                icon: 'question',
-                title: '일정 생성 중입니다...',
-                showConfirmButton: false,
-                timer: 10000,
+              title: "AI가 일정을 생성중입니다...",
+              html: "<b></b>초만큼 기다려주세요",
+              timer: 5000,
+              timerProgressBar: true,
+              didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                timerInterval = setInterval(() => {
+                  timer.textContent = `${Swal.getTimerLeft()}`;
+                }, 100);
+              },
+              willClose: () => {
+                clearInterval(timerInterval);
+              }
+            }).then((result) => {
+
+              if (result.dismiss === Swal.DismissReason.timer) {
+                console.log("I was closed by the timer");
+              }
             });
             Swal.fire({
                 position: 'center',
@@ -110,7 +125,7 @@ const ScheduleRecommend = ({ setScheduleRecommendModalOpen }) => {
                         </InputLabel>
                         <InputLabel>
                             <p>교통수단 선택</p>
-                            
+
                         </InputLabel>
                         <SubmitButton onClick={handleSubmit}>
                             일정 추천받기

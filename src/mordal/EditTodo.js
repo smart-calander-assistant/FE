@@ -239,4 +239,5 @@ const DateContainer = styled(DatePicker)`
     padding: 0 0.5rem;
     border-radius: 0.5rem;
     border: 0.1rem solid #de496e;
+    text-align: center;
 `;
