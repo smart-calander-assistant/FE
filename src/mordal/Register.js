@@ -24,15 +24,16 @@ export default function Register({ setRegisterModalOpen }) {
                     showConfirmButton: false,
                     timer: 2000,
                 });
+                setRegisterModalOpen(false);
                 console.log('회원가입 성공');
             } else {
                 console.log('회원가입 실패:', response.data);
             }
         } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    text: '이미 가입된 이메일입니다. 다른 이메일을 사용해주세요',
-                });
+            Swal.fire({
+                icon: 'error',
+                text: '이미 가입된 이메일입니다. 다른 이메일을 사용해주세요',
+            });
             console.error('회원가입 오류:', error);
         }
     };
@@ -48,26 +49,26 @@ export default function Register({ setRegisterModalOpen }) {
                             onClick={() => setRegisterModalOpen(false)}
                         />
                     </ModalTitle>
-                        <InputList>
-                            <InputLabel>
+                    <InputList>
+                        <InputLabel>
                             <p>이메일</p>
                             <InputBox
                                 type='email'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder='이메일을 입력해주세요'
-                                />
-                                </InputLabel>
-                            <InputBox
-                                type='password'
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder='비밀번호를 입력해주세요'
                             />
+                        </InputLabel>
+                        <InputBox
+                            type='password'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder='비밀번호를 입력해주세요'
+                        />
                         <SubmitButton onClick={handleRegister}>
                             회원가입
                         </SubmitButton>
-                        </InputList>
+                    </InputList>
                 </ModalContainer>
             </RootContainer>
         </ViewContainer>
@@ -85,16 +86,14 @@ const RootContainer = styled.div`
     background-color: rgb(0 0 0 / 30%);
     -webkit-tap-highlight-color: transparent;
     justify-content: center;
-    padding: 16rem 1.5rem;
+    padding: 12vh 1.5rem;
 `;
 
 const ModalContainer = styled.div`
     position: relative;
     background: white;
-    overflow: hidden;
     border-radius: 0.5rem;
     transition: all 400ms ease-in-out 2s;
-    overflow-y: scroll;
     padding: 2rem;
 `;
 
@@ -115,8 +114,25 @@ const InputList = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-
     margin-top: 1rem;
+
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    max-height: 60vh;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    /* &::-webkit-scrollbar-thumb {
+      background-color: gray;
+      border-radius: 1rem;
+  } */
+
+    &::-webkit-scrollbar-track {
+        background-color: white;
+    }
 `;
 
 const InputLabel = styled.div`

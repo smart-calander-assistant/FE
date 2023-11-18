@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../component/Footer';
 import styled from 'styled-components';
 import Header from '../component/Header';
@@ -10,23 +10,67 @@ import { useNavigate } from 'react-router-dom';
 import MyInfo from '../mordal/MyInfo';
 import axios from '../api/axios';
 import requests from '../api/requests';
+import Weight from '../mordal/Weight';
 
 export default function Setting() {
-    const [day, successDay] = [12, 8];
-    const successDayRate = ((successDay / day) * 100).toFixed(1);
-    const [todo, successTodo] = [28, 21];
-    const successTodoRate = ((successTodo / todo) * 100).toFixed(1);
+    const [myTodoCount, setMyTodoCount] = useState(0);
+    const [myTodoFinishCount, setMyTodoFinishCount] = useState(0);
+    const [myTodoSuccessRate, setMyTodoSuccessRate] = useState(0);
     const recommended = 7;
     const [myInfoModalOpen, setMyInfoModalOpen] = useState(false);
+    const [weightModalOpen, setWeightModalOpen] = useState(false);
     const [mySleepInfo, setMySleepInfo] = useState('');
     const [myFocusInfo, setMyFocusInfo] = useState('');
     const [myNotFocusInfo, setMyNotFocusInfo] = useState('');
+    const [myWeightInfo, setMyWeightInfo] = useState('');
 
     const navigate = useNavigate();
 
     const accessToken = getAccessToken();
 
     const defaultDate = '1970-01-01';
+
+    useEffect(() => {
+        if (!accessToken) {
+            console.log('Access Token is not available');
+            return;
+        }
+
+        const fetchData = async () => {
+            try {
+                const myCount = await axios.get(`${requests.fetchTodo}/count`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                    },
+                });
+
+                const myFinishCount = await axios.get(
+                    `${requests.fetchTodo}/count?complete=${true}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                        },
+                    }
+                );
+
+                setMyTodoCount(myCount.data);
+                setMyTodoFinishCount(myFinishCount.data);
+
+                if (myFinishCount.data === 0) {
+                    setMyTodoSuccessRate(0);
+                } else {
+                    setMyTodoSuccessRate(((myFinishCount.data / myCount.data) * 100).toFixed(1));
+                }
+
+                console.log('Todo개수 데이터:', myCount.data);
+                console.log('Todo완료개수 데이터:', myFinishCount.data);
+            } catch (error) {
+                console.error('데이터 가져오기 오류:', error);
+            }
+        };
+
+        fetchData();
+    }, [accessToken]);
 
     const handleLogout = () => {
         Swal.fire({
@@ -78,18 +122,63 @@ export default function Setting() {
                 }
             );
 
-                setMySleepInfo(mySleepInfo.data[0]);
-                setMyFocusInfo(myFocusInfo.data[0]);
-                setMyNotFocusInfo(myNotFocusInfo.data[0]);
-
-                console.log('mySleepInfo:', mySleepInfo.data[0]);
-                console.log('myFocusInfo:', myFocusInfo.data[0]);
-                console.log('myNotFocusInfo:', myNotFocusInfo.data[0]);
-
+            setMySleepInfo(mySleepInfo.data[0]);
+            setMyFocusInfo(myFocusInfo.data[0]);
+            setMyNotFocusInfo(myNotFocusInfo.data[0]);
+            console.log('a', mySleepInfo);
+            console.log('b', myFocusInfo);
+            console.log('c', myNotFocusInfo);
         } catch (error) {
             console.error('내 정보 확인 중 오류 발생: ', error);
         }
         setMyInfoModalOpen(true);
+    };
+
+    const handleMemberWithdrawal = async () => {
+        Swal.fire({
+            title: '정말 회원탈퇴 하시겠습니까?',
+            icon: 'warning',
+            text: '모든 정보가 사라지게됩니다.',
+            showCancelButton: true,
+            confirmButtonColor: '#3A86FF',
+            cancelButtonColor: '#de496e',
+            confirmButtonText: 'Yes',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                removeAccessToken(accessToken);
+                try {
+                    axios.delete(requests.fetchWithdrawal, {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    });
+                } catch (error) {
+                    console.error('회원탈퇴 중 오류 발생: ', error);
+                }
+                Swal.fire(
+                    '회원탈퇴 완료',
+                    '로그인 페이지로 돌아갑니다',
+                    'success'
+                ).then(() => {
+                    navigate('/');
+                    window.location.reload();
+                });
+            }
+        });
+    };
+
+    const handleWeight = async () => {
+        try {
+            const myWeight = await axios.get(requests.fetchWeight, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setMyWeightInfo(myWeight);
+        } catch (error) {
+            console.error('가중치확인 중 오류 발생: ', error);
+        }
+        setWeightModalOpen(true);
     };
 
     return (
@@ -102,16 +191,10 @@ export default function Setting() {
                 />
                 <RecordContainer>
                     <RecordContent
-                        title={'성공적인 하루'}
-                        content={`${day}일동안 ${successDay}일의 일정을 마무리했어요`}
-                        type={'goal'}
-                        percent={`달성률 ${successDayRate}%`}
-                    />
-                    <RecordContent
                         title={'바쁘다 바빠'}
-                        content={`${todo}개의 해야할 일 중 ${successTodo}개를 끝냈어요`}
+                        content={`${myTodoCount}개의 해야할 일 중 ${myTodoFinishCount}개를 끝냈어요`}
                         type={'goal'}
-                        percent={`달성률 ${successTodoRate}%`}
+                        percent={`달성률 ${myTodoSuccessRate}%`}
                     />
                     <RecordContent
                         title={'정교한 일정 설정'}
@@ -125,15 +208,35 @@ export default function Setting() {
                     onClick={handleInfoClick}
                 />
                 {myInfoModalOpen && (
+                    console.log(mySleepInfo),
+                    console.log(myFocusInfo),
+                    console.log(myNotFocusInfo),(
                     <MyInfo
                         setMyInfoModalOpen={setMyInfoModalOpen}
+                        sleep_id={mySleepInfo.id}
                         sleep_start={`${defaultDate} ${mySleepInfo.startTime}`}
                         sleep_end={`${defaultDate} ${mySleepInfo.endTime}`}
+                        good_id={myFocusInfo.id}
                         good_start={`${defaultDate} ${myFocusInfo.startTime}`}
                         good_end={`${defaultDate} ${myFocusInfo.endTime}`}
+                        bad_id={myNotFocusInfo.id}
                         bad_start={`${defaultDate} ${myNotFocusInfo.startTime}`}
                         bad_end={`${defaultDate} ${myNotFocusInfo.endTime}`}
-                    />
+                    />)
+                )}
+                <ExplainContent
+                    title={'AI 일정추천 우선순위'}
+                    content={
+                        '자신만의 스타일로 AI의 일정 추천을 받을 수 있습니다'
+                    }
+                    onClick={handleWeight}
+                />
+                {weightModalOpen && (
+                    console.log(myWeightInfo),
+                    (<Weight
+                        setWeightModalOpen={setWeightModalOpen}
+                        myWeight={myWeightInfo.data}
+                    />)
                 )}
                 <ExplainContent
                     title={'일정 기록 초기화'}
@@ -147,6 +250,7 @@ export default function Setting() {
                 <ExplainContent
                     title={'회원 탈퇴'}
                     content={'계정을 삭제합니다'}
+                    onClick={handleMemberWithdrawal}
                 />
             </ContentWrapper>
             <Footer label={'setting'} />
@@ -169,12 +273,8 @@ const RecordContainer = styled.div`
 
 const ContentWrapper = styled.div`
     flex: 1;
-    overflow-y: hidden;
+    overflow-y: auto;
     scroll-behavior: smooth;
-
-    &:hover {
-        overflow-y: auto;
-    }
 
     &::-webkit-scrollbar {
         width: 5px;

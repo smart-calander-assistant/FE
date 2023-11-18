@@ -1,7 +1,6 @@
 import './App.css';
 import styled from 'styled-components';
-import { Router, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Calendar from './pages/Calendar';
 import Todoplan from './pages/Todoplan';
@@ -22,6 +21,7 @@ function App() {
                         </Routes>
                     ) : (
                         <Routes>
+                            <Route path='/' element={<Login />} />
                             <Route path='/calendar' element={<Calendar />} />
                             <Route path='/todoplan' element={<Todoplan />} />
                             <Route path='/schedule' element={<Schedule />} />

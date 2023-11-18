@@ -7,12 +7,21 @@ import PlanCard from '../component/PlanCard';
 import requests from '../api/requests';
 import axios from '../api/axios';
 import { getAccessToken } from '../localstorage/auth';
+import ScheduleRecommend from './../mordal/ScheduleRecommend';
+import { AiOutlinePlus } from 'react-icons/ai';
+import AddTodo from '../mordal/AddTodo';
+import AddPlan from '../mordal/AddPlan';
 
 export default function Todoplan() {
+    const [addTodoModalOpen, setAddTodoModalOpen] = useState(false);
+    const [addPlanModalOpen, setAddPlanModalOpen] = useState(false);
     const [remainTodo, setRemainTodo] = useState([]);
     const [completedTodo, setCompletedTodo] = useState([]);
     const [remainPlan, setRemainPlan] = useState([]);
     const [showTodoList, setShowTodoList] = useState(true);
+    const [recommendModalOpen, setRecommendModalOpen] = useState(false);
+    const [changed, setChanged] = useState(false);
+
     const accessToken = getAccessToken();
 
     useEffect(() => {
@@ -23,6 +32,7 @@ export default function Todoplan() {
 
         const fetchData = async () => {
             try {
+                setChanged(false);
                 if (showTodoList) {
                     // showTodoList가 true일 때는 Todo 데이터를 가져옵니다.
                     const remainTodo = await axios.get(
@@ -65,7 +75,15 @@ export default function Todoplan() {
         };
 
         fetchData();
-    }, [accessToken, showTodoList]);
+    }, [accessToken, showTodoList, changed]);
+
+    const handleAddTodoModal = () => {
+        setAddTodoModalOpen(true);
+    };
+
+    const handleAddPlanModal = () => {
+        setAddPlanModalOpen(true);
+    };
 
     const handleEditPlan = (planId) => {
         axios
@@ -135,6 +153,14 @@ export default function Todoplan() {
             });
     };
 
+    const handleClick = () => {
+        setRecommendModalOpen(true);
+    };
+
+    const handleChange = () => {
+        setChanged(true);
+    };
+
     return (
         <RootContainer>
             <Header label={'해야할 일'} TodoList={showTodoList} />
@@ -152,6 +178,12 @@ export default function Todoplan() {
                     Planned List
                 </TypeBox>
             </TodoPlanContainer>
+            <SubmitButton onClick={handleClick}>AI일정 추천</SubmitButton>
+            {recommendModalOpen && (
+                <ScheduleRecommend
+                    setRecommendModalOpen={setRecommendModalOpen}
+                />
+            )}
             <ContentWrapper active={showTodoList}>
                 {showTodoList
                     ? remainTodo
@@ -168,6 +200,7 @@ export default function Todoplan() {
                                   onEdit={handleEditTodo}
                                   onDelete={handleDeleteTodo}
                                   onComplete={handleCompleteTodo}
+                                  onChange={handleChange}
                               />
                           ))
                     : remainPlan.map((item) => (
@@ -180,8 +213,37 @@ export default function Todoplan() {
                               place={item.place}
                               onEdit={handleEditPlan}
                               onDelete={handleDeletePlan}
+                              onChange={handleChange}
                           />
                       ))}
+                {
+                    <PlusIcon>
+                        {showTodoList && (
+                            <AiOutlinePlus
+                                size={'2rem'}
+                                onClick={handleAddTodoModal}
+                            />
+                        )}
+                        {!showTodoList && (
+                            <AiOutlinePlus
+                                size={'2rem'}
+                                onClick={handleAddPlanModal}
+                            />
+                        )}
+                        {addTodoModalOpen && (
+                            <AddTodo
+                                setAddTodoModalOpen={setAddTodoModalOpen}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {addPlanModalOpen && (
+                            <AddPlan
+                                setAddPlanModalOpen={setAddPlanModalOpen}
+                                onChange={handleChange}
+                            />
+                        )}
+                    </PlusIcon>
+                }
             </ContentWrapper>
             <Footer label={'todoplan'} />
         </RootContainer>
@@ -197,12 +259,8 @@ const RootContainer = styled.div`
 
 const ContentWrapper = styled.div`
     flex: 1;
-    overflow-y: hidden;
+    overflow-y: auto;
     scroll-behavior: smooth;
-
-    &:hover {
-        overflow-y: auto;
-    }
 
     &::-webkit-scrollbar {
         width: 5px;
@@ -223,6 +281,21 @@ const TodoPlanContainer = styled.div`
     justify-content: center;
     margin: 0 0 1rem 0;
 `;
+
+const SubmitButton = styled.button`
+    background-color: #ffbe0b;
+    color: black;
+    font-size: large;
+    border: 0.1rem solid #ffbe0b;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin: 0 1rem;
+
+    &:hover {
+        opacity: 0.7;
+    }
+`;
+
 const TypeBox = styled.div`
     display: flex;
     flex: 1;
@@ -232,4 +305,17 @@ const TypeBox = styled.div`
     opacity: ${(props) => (props.active ? '0.7' : '1')};
     color: ${(props) => (props.active ? 'white' : 'black')};
     padding: 1rem;
+`;
+
+const PlusIcon = styled.div`
+    display: flex;
+    position: absolute;
+    z-index: 1;
+    right: 5vw;
+    bottom: 10vh;
+    padding: 0.5rem;
+    background-color: #73b3f0;
+    border-radius: 3rem;
+    justify-content: center;
+    box-shadow: 0 0 2rem 0.4rem grey;
 `;

@@ -42,12 +42,8 @@ const RootContainer = styled.div`
 `
 const ContentWrapper = styled.div`
   flex: 1;
-  overflow-y: hidden;
+  overflow-y: auto;
   scroll-behavior: smooth;
-
-  &:hover {
-    overflow-y: auto;
-  }
 
   &::-webkit-scrollbar {
     width: 5px;

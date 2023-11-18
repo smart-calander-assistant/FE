@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import './fonts.css';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 // const AppProvider = ({ contexts, children }) =>
 //     contexts.reduce(
@@ -23,4 +24,5 @@ ReactDOM.render(
     document.getElementById('root')
 );
 
+serviceWorkerRegistration.register();
 reportWebVitals();

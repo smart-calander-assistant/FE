@@ -18,6 +18,7 @@ const EditTodo = ({
     place,
     title,
     setEditTodoModalOpen,
+    onChange,
 }) => {
     const [titleInput, setTitleInput] = useState(title);
     const [deadlineInput, setDeadlineInput] = useState(new Date(deadline));
@@ -90,6 +91,7 @@ const EditTodo = ({
                 showConfirmButton: false,
                 timer: 2000,
             });
+            onChange();
         } catch (error) {
             console.error('Todo 수정 중 오류 발생: ', error);
         }
@@ -129,7 +131,7 @@ const EditTodo = ({
                                 locale={ko}
                                 showTimeSelect
                                 timeFormat='p'
-                                timeIntervals={30}
+                                timeIntervals={60}
                                 dateFormat='yyyy-MM-dd HH:mm'
                                 placeholderText={deadline}
                             />
@@ -172,16 +174,14 @@ const RootContainer = styled.div`
     background-color: rgb(0 0 0 / 30%);
     -webkit-tap-highlight-color: transparent;
     justify-content: center;
-    padding: 6rem 1.5rem;
+    padding: 12vh 1.5rem;
 `;
 
 const ModalContainer = styled.div`
     position: relative;
     background: white;
-    overflow: hidden;
     border-radius: 0.5rem;
     transition: all 400ms ease-in-out 2s;
-    overflow-y: scroll;
     padding: 2rem;
 `;
 
@@ -202,8 +202,25 @@ const InputList = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-
     margin-top: 1rem;
+
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    max-height: 60vh;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    /* &::-webkit-scrollbar-thumb {
+      background-color: gray;
+      border-radius: 1rem;
+  } */
+
+    &::-webkit-scrollbar-track {
+        background-color: white;
+    }
 `;
 
 const InputLabel = styled.div`
