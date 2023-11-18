@@ -21,6 +21,7 @@ const TodoCard = ({
     onEdit,
     onDelete,
     onComplete,
+    onChange,
 }) => {
     const ref = useRef();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,9 +58,10 @@ const TodoCard = ({
                     title: '삭제 완료',
                     icon: 'success',
                 });
+                onDelete(id);
+                onChange();
             }
         });
-        onDelete(id);
     };
 
     const handleCompleteClick = () => {
@@ -73,6 +75,7 @@ const TodoCard = ({
             timer: 2000,
         });
         console.log('작업완료여부 수정');
+        onChange();
         onComplete(id, isCompleted);
     };
 
@@ -97,7 +100,7 @@ const TodoCard = ({
                             삭제하기
                         </MenuItem>
                         <MenuItem onClick={handleCompleteClick}>
-                            {isCompleted ? '작업미완료': '작업완료'}
+                            {isCompleted ? '작업미완료' : '작업완료'}
                         </MenuItem>
                     </Menu>
                 )}
@@ -107,19 +110,20 @@ const TodoCard = ({
                     <IoListCircleOutline
                         isCompleted={isCompleted}
                         size={'1.5rem'}
-                        color={isCompleted ? '#8572FF' : '#DE496E'
-                        }
+                        color={isCompleted ? '#8572FF' : '#DE496E'}
                     />
                     <p>{title}</p>
                 </TitleBox>
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
-                    {!isCompleted && <AlarmBox>
-                        <IoAlarmOutline size={'1rem'} />
-                        <p>08:30 PM</p>
-                    </AlarmBox>}
-                    {isCompleted && <p>{' '}</p>}
+                    {!isCompleted && (
+                        <AlarmBox>
+                            <IoAlarmOutline size={'1rem'} />
+                            <p>08:30 PM</p>
+                        </AlarmBox>
+                    )}
+                    {isCompleted && <p> </p>}
                     <TimeBox>
                         <p>마감기한 : {deadline}</p>
                     </TimeBox>
@@ -133,6 +137,7 @@ const TodoCard = ({
                     place={place}
                     priority={priority}
                     setEditTodoModalOpen={setEditTodoModalOpen}
+                    onChange={onChange}
                 />
             )}
         </TodoContainer>
@@ -146,6 +151,7 @@ const TodoContainer = styled.div`
     margin: 0.5rem;
     border-radius: 1rem;
 `;
+
 const HeaderBox = styled.div`
     display: flex;
     align-items: center;
@@ -157,6 +163,7 @@ const HeaderBox = styled.div`
 
     color: white;
 `;
+
 const PriorityBox = styled.div`
     display: flex;
     align-items: center;
@@ -170,11 +177,11 @@ const Menu = styled.div`
     position: relative;
     color: black;
     background: white;
-    border: 0.5px solid #3a86ff;
+    border: 0.1rem solid #3a86ff;
 `;
 
 const MenuItem = styled.div`
-    padding: 0.5rem 1rem;
+    padding: 0.3rem 1rem;
     border: 0.5px solid #3a86ff;
     &:hover {
         background-color: #3a86ff;
@@ -187,6 +194,7 @@ const ContentBox = styled.div`
     border-radius: 0 0 0.5rem 0.5rem;
     padding: 0.5rem;
 `;
+
 const TitleBox = styled.div`
     display: flex;
     align-items: center;

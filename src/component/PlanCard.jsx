@@ -19,6 +19,7 @@ const PlanCard = ({
     title,
     onEdit,
     onDelete,
+    onChange,
 }) => {
     const ref = useRef();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,21 +44,22 @@ const PlanCard = ({
         // "삭제하기" 클릭 시 수행할 작업
         setIsMenuOpen(false);
         Swal.fire({
-            title: "해당 Plan을 삭제하시겠습니까?",
-            icon: "warning",
+            title: '해당 Plan을 삭제하시겠습니까?',
+            icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes"
-          }).then((result) => {
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+        }).then((result) => {
             if (result.isConfirmed) {
-              Swal.fire({
-                title: "삭제 완료",
-                icon: "success"
-              });
+                Swal.fire({
+                    title: '삭제 완료',
+                    icon: 'success',
+                });
+                onDelete(id);
+                onChange();
             }
-          });
-        onDelete(id);
+        });
     };
 
     return (
@@ -67,10 +69,12 @@ const PlanCard = ({
                     <IoFlagSharp size={'1rem'} />
                     <p>진행 중</p>
                 </PriorityBox>
-                {!isMenuOpen && <IoEllipsisHorizontalSharp
-                    size={'1.5rem'}
-                    onClick={toggleMenu}
-                />}
+                {!isMenuOpen && (
+                    <IoEllipsisHorizontalSharp
+                        size={'1.5rem'}
+                        onClick={toggleMenu}
+                    />
+                )}
                 {isMenuOpen && (
                     <Menu ref={ref}>
                         <MenuItem onClick={handleEditClick}>수정하기</MenuItem>
@@ -85,9 +89,7 @@ const PlanCard = ({
                     <IoListCircleOutline size={'1.5rem'} color={'#0ACF83'} />
                     <p>{title}</p>
                 </TitleBox>
-                <PlaceBox>
-                    {place === '' ? '' : <p>장소 : {place}</p>}
-                </PlaceBox>
+                <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
                     <AlarmBox>
@@ -109,6 +111,7 @@ const PlanCard = ({
                     end_time={end_time}
                     place={place}
                     setEditPlanModalOpen={setEditPlanModalOpen}
+                    onChange={onChange}
                 />
             )}
         </TodoContainer>
@@ -146,11 +149,11 @@ const Menu = styled.div`
     position: relative;
     color: black;
     background: white;
-    border: 0.5px solid #3a86ff;
+    border: 0.1rem solid #3a86ff;
 `;
 
 const MenuItem = styled.div`
-    padding: 0.5rem 1rem;
+    padding: 0.3rem 1rem;
     border: 0.5px solid #3a86ff;
     &:hover {
         background-color: #3a86ff;
@@ -163,6 +166,7 @@ const ContentBox = styled.div`
     border-radius: 0 0 0.5rem 0.5rem;
     padding: 0.5rem;
 `;
+
 const TitleBox = styled.div`
     display: flex;
     align-items: center;

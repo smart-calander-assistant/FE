@@ -191,12 +191,8 @@ const DayContainer = styled.div`
 
 const ContentWrapper = styled.div`
     display: flex;
-    overflow-y: hidden;
+    overflow-y: auto;
     scroll-behavior: smooth;
-
-    &:hover {
-        overflow-y: auto;
-    }
 
     &::-webkit-scrollbar {
         width: 5px;

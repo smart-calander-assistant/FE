@@ -59,5 +59,6 @@ const NumberButton = styled.button`
 
   &.selected {
     background-color: #3A86FF;
+    color: white;
   }
 `

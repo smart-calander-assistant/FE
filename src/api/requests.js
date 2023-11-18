@@ -7,10 +7,13 @@ const requests = {
     // LifePattern 관련 API
     fetchLife: '/life',
     // Auth 관련 API
-    fetchLogin: '/auth/login',      // Post
-    fetchLogout: '/auth/logout',    // Post
-    fetchSignup: '/auth/signup',    // Post
-    fetchReissue: '/auth/reissue',  // Post
+    fetchLogin: '/auth/login',      
+    fetchLogout: '/auth/logout',    
+    fetchSignup: '/auth/signup',
+    fetchWithdrawal: '/auth/withdrawal', 
+    fetchReissue: '/auth/reissue',
+    // Importance 관련 API
+    fetchWeight: '/importance',
 };
 
 export default requests;
