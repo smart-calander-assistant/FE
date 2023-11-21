@@ -12,7 +12,7 @@ export default function CalendarPlanModal({setModalOpen, plans}) {
             <RootContainer>
                 <ModalContainer>
                     <ModalTitle>
-                        <ModalDetail>내 정보</ModalDetail>
+                        <ModalDetail>Plan</ModalDetail>
                         <IoClose
                             size={'2rem'}
                             onClick={() => setModalOpen(false)}
