@@ -18,16 +18,17 @@ export default function CalendarPlanModal({setModalOpen, plans}) {
                             onClick={() => setModalOpen(false)}
                         />
                     </ModalTitle>
-                    {plans.map((plan) => (
+                    {plans.map((plan) => {
+                        return (
                         <PlanCard
                             key={plan.id}
                             id={plan.id}
-                            start_time={plan.start_time}
-                            end_time={plan.end_time}
+                            start_time={plan.startTime}
+                            end_time={plan.endTime}
                             place={plan.place}
-                            title={plan.title}
+                            title={plan.content}
                         />
-                    ))}
+                    )})}
                 </ModalContainer>
             </RootContainer>
         </ViewContainer>
