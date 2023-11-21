@@ -57,7 +57,9 @@ export default function Calendar() {
 
     const handleDateClick = (date) => {
         setSelectedDate(date);
-        setIsModalOpen(true);
+        if(isDateMarked(date)){
+            setIsModalOpen(true);
+        }
     }
 
     return (
@@ -72,14 +74,14 @@ export default function Calendar() {
                                 value={value}
                                 next2Label={null}
                                 prev2Label={null}
-                                formatDay={(locale, date) => moment(date).format("DD")}
+                                formatDay={(locale, date) => moment(date).format("D")}
                                 showNeighboringMonth={false}
                                 tileContent={tileContent}
                                 onClickDay={handleDateClick}
                             />
                             {isModalOpen && (
                                 <CalendarPlanModal
-                                    setModalOpen={isModalOpen}
+                                    setModalOpen={setIsModalOpen}
                                     plans={plans}
                                 />
                             )}
