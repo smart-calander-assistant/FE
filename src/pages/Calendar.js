@@ -99,7 +99,9 @@ const RootContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-`
+  width: 100vw;
+`;
+
 const ContentWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -108,16 +110,11 @@ const ContentWrapper = styled.div`
   &::-webkit-scrollbar {
     width: 5px;
   }
-
-  /* &::-webkit-scrollbar-thumb {
-      background-color: gray;
-      border-radius: 1rem;
-  } */
-
   &::-webkit-scrollbar-track {
-    background-color: white;
+    background-color: #f5f5f5;
   }
-`
+`;
+
 const CalendarContainer = styled.div`
   .Calendar__container {
     display: flex;
