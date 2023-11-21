@@ -150,6 +150,7 @@ const TodoContainer = styled.div`
     padding: 0.5rem;
     margin: 0.5rem;
     border-radius: 1rem;
+    box-shadow: 1px 1px;
 `;
 
 const HeaderBox = styled.div`
@@ -157,7 +158,7 @@ const HeaderBox = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem 0 0.5rem;
-    background-color: ${(props) => (props.isCompleted ? '#8572FF' : '#de496e')};
+    background-color: ${(props) => (props.isCompleted ? '#8572FF' : '#FF8F8F')};
     border-radius: 0.5rem 0.5rem 0 0;
     height: 2.5rem;
 
