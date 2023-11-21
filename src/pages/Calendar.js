@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Footer from '../component/Footer'
 import styled from 'styled-components'
 import Header from '../component/Header'
@@ -6,9 +6,61 @@ import CalendarLib from 'react-calendar';
 import './Calendar.css'
 import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
+import {getAccessToken} from "../localstorage/auth";
+import axios from "../api/axios";
+import requests from "../api/requests";
+import CalendarPlanModal from "../mordal/CalendarPlanModal";
 
 export default function Calendar() {
     const [value, onChange] = useState(new Date());
+    const [plans, setPlans] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const accessToken = getAccessToken();
+
+    useEffect(() => {
+        if (!accessToken) {
+            console.log('Access Token is not available');
+            return;
+        }
+
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${requests.fetchPlan}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    });
+                setPlans(response.data);
+            } catch (error) {
+                console.error('fetching error', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const getMarkedDates = () => {
+        return plans.map(plan => new Date(plan.startTime));
+    };
+
+    const isDateMarked = (date) => {
+        return getMarkedDates().some(markedDate => markedDate.toDateString() === date.toDateString());
+    }
+
+    const tileContent = ({date, view}) => {
+        return isDateMarked(date) ? (<>
+            <div className="dot"/>
+        </>) : null;
+    }
+
+    const handleDateClick = (date) => {
+        setSelectedDate(date);
+        if(isDateMarked(date)){
+            setIsModalOpen(true);
+        }
+    }
 
     return (
         <RootContainer>
@@ -24,7 +76,15 @@ export default function Calendar() {
                                 prev2Label={null}
                                 formatDay={(locale, date) => moment(date).format("D")}
                                 showNeighboringMonth={false}
+                                tileContent={tileContent}
+                                onClickDay={handleDateClick}
                             />
+                            {isModalOpen && (
+                                <CalendarPlanModal
+                                    setModalOpen={setIsModalOpen}
+                                    plans={plans}
+                                />
+                            )}
                         </div>
                     </div>
                 </CalendarContainer>
@@ -39,7 +99,9 @@ const RootContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-`
+  width: 100vw;
+`;
+
 const ContentWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -48,31 +110,12 @@ const ContentWrapper = styled.div`
   &::-webkit-scrollbar {
     width: 5px;
   }
-
-  /* &::-webkit-scrollbar-thumb {
-      background-color: gray;
-      border-radius: 1rem;
-  } */
-
   &::-webkit-scrollbar-track {
-    background-color: white;
+    background-color: #f5f5f5;
   }
-`
-const CalendarContainer = styled.div`
-  /*  body {
-      height: 100%;
-    }
-  
-    body {
-      margin: 0;
-      font-family: Segoe UI, Tahoma, sans-serif;
-    }
-  
-    .Calendar input,
-    .Calendar button {
-      font: inherit;
-    }*/
+`;
 
+const CalendarContainer = styled.div`
   .Calendar__container {
     display: flex;
     flex-direction: row;
@@ -100,29 +143,46 @@ const CalendarContainer = styled.div`
     margin: 0 auto;
   }
 
-  .react-calendar__tile--now abbr {
-    background: yellow;
-    padding: 15%;
-    border-radius: 50%;
+  .react-calendar__navigation {
+    //height: 2rem;
+  }
+
+  .react-calendar__tile {
+    text-align: center;
+    height: 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   .react-calendar__tile--now {
-    background: white;
+    background: #ffbe0b;
+    border-radius: 10%;
   }
 
-  .react-calendar__tile--active abbr {
-    background: #3a86ff;
-    color: black;
-    padding: 15%;
-    border-radius: 50%;
-  }
-
+  .react-calendar__tile:enabled:hover,
+  .react-calendar__tile:enabled:focus,
   .react-calendar__tile--active {
-    background: white;
+    background: #3a86ff;
+    border-radius: 10%;
   }
 
-  .react-calendar__tile--active:enabled:focus,
-  .react-calendar__tile--active:enabled:hover {
-    background-color: white;
+  .react-calendar__tile--now:enabled:hover,
+  .react-calendar__tile--now:enabled:focus {
+    background: #3a86ff;
+    border-radius: 10%;
+  }
+
+  .dot {
+    flex-direction: column;
+    align-items: center;
+    height: 1rem;
+    width: 1rem;
+    background-color: #de496e;
+    border-radius: 50%;
+    display: flex;
+    margin: 0 auto;
   }
 `;
+
