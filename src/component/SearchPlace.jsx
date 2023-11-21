@@ -30,7 +30,7 @@ const SearchPlace = ({ onPlaceSelect, placeholder }) => {
 
     return (
         <GooglePlacesAutocomplete
-            apiKey='AIzaSyAmv2xe6s3wIdChJ7YUjay9gCbh_QuzetU'
+            apiKey='env.process.REACT_APP_GOOGLE_API_KEY'
             apiOptions={{ language: 'ko', region: 'kr' }}
             onLoadFailed={(error) =>
                 console.error('could not inject google script', error)
