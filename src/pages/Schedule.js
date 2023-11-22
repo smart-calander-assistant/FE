@@ -5,7 +5,6 @@ import Header from '../component/Header';
 import ScheduleContent from '../component/ScheduleContent';
 import DayCard from '../component/DayCard';
 import TransfortationContent from '../component/TransfortationContent';
-import TimeTable from '../component/TimeTable';
 
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';

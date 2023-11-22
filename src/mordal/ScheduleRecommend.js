@@ -10,12 +10,14 @@ import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import SelectContent from '../component/SelectContent';
+import Recommendation from '../pages/Recommendation';
 
 const ScheduleRecommend = ({ setRecommendModalOpen }) => {
     const [startTimeInput, setStartTimeInput] = useState(
         new Date().setDate(new Date().getDate() + 1)
     );
     const [dayInput, setDayInput] = useState(5);
+    const [resultModal, setResultModal] = useState(false);
     const accessToken = getAccessToken();
 
     const handleSubmit = async (e) => {
@@ -70,6 +72,8 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
                 showConfirmButton: false,
                 timer: 2000,
             });
+
+            setResultModal(true);
         } catch (error) {
             console.error('일정 추천 중 오류 발생: ', error);
         }
@@ -117,7 +121,7 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
                                 </TransportButton>
                             </SelectBox>
                         </InputLabel>
-                        <InputLabel>
+                        {/* <InputLabel>
                             <p>추천 시 취미생활 포함 여부</p>
                             <SelectBox>
                                 <TransportButton location='left'>
@@ -127,10 +131,11 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
                                     불포함
                                 </TransportButton>
                             </SelectBox>
-                        </InputLabel>
+                        </InputLabel> */}
                         <SubmitButton onClick={handleSubmit}>
                             일정 추천받기
                         </SubmitButton>
+                        {/* {resultModal && <Recommendation />} */}
                     </InputList>
                 </ModalContainer>
             </RootContainer>
