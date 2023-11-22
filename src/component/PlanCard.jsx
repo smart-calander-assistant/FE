@@ -38,6 +38,7 @@ const PlanCard = ({
         setIsMenuOpen(false);
         setEditPlanModalOpen(true);
         onEdit(id);
+        onChange();
     };
 
     const handleDeleteClick = () => {
