@@ -11,15 +11,18 @@ import ScheduleRecommend from './../mordal/ScheduleRecommend';
 import { AiOutlinePlus } from 'react-icons/ai';
 import AddTodo from '../mordal/AddTodo';
 import AddPlan from '../mordal/AddPlan';
+import Result from '../mordal/Result';
 
 export default function Todoplan() {
     const [addTodoModalOpen, setAddTodoModalOpen] = useState(false);
     const [addPlanModalOpen, setAddPlanModalOpen] = useState(false);
+    const [recommendModalOpen, setRecommendModalOpen] = useState(false);
+    const [resultModalOpen, setResultModalOpen] = useState(false);
+    
     const [remainTodo, setRemainTodo] = useState([]);
     const [completedTodo, setCompletedTodo] = useState([]);
     const [remainPlan, setRemainPlan] = useState([]);
     const [showTodoList, setShowTodoList] = useState(true);
-    const [recommendModalOpen, setRecommendModalOpen] = useState(false);
     const [changed, setChanged] = useState(false);
 
     const accessToken = getAccessToken();
@@ -182,8 +185,10 @@ export default function Todoplan() {
             {recommendModalOpen && (
                 <ScheduleRecommend
                     setRecommendModalOpen={setRecommendModalOpen}
+                    setResultModalOpen={setResultModalOpen}
                 />
             )}
+            {resultModalOpen && (<Result setResultModalOpen={setResultModalOpen}/>)}
             <ContentWrapper active={showTodoList}>
                 {showTodoList
                     ? remainTodo
@@ -216,7 +221,7 @@ export default function Todoplan() {
                               onChange={handleChange}
                           />
                       ))}
-                {
+                {!resultModalOpen && !recommendModalOpen &&
                     <PlusIcon>
                         {showTodoList && (
                             <AiOutlinePlus
