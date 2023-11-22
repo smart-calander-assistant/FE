@@ -10,14 +10,12 @@ import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import SelectContent from '../component/SelectContent';
-import Recommendation from '../pages/Recommendation';
 
-const ScheduleRecommend = ({ setRecommendModalOpen }) => {
+const ScheduleRecommend = ({ setRecommendModalOpen, setResultModalOpen }) => {
     const [startTimeInput, setStartTimeInput] = useState(
         new Date().setDate(new Date().getDate() + 1)
     );
     const [dayInput, setDayInput] = useState(5);
-    const [resultModal, setResultModal] = useState(false);
     const accessToken = getAccessToken();
 
     const handleSubmit = async (e) => {
@@ -32,11 +30,11 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
             console.log('newRecommend:', newRecommend);
 
             // Axios를 사용하여 POST 요청을 보냅니다.
-            await axios.post(requests.fetchPlan, newRecommend, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
-                },
-            });
+            // await axios.post(requests.fetchPlan, newRecommend, {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+            //     },
+            // });
 
             // 입력값 초기화
             setStartTimeInput('');
@@ -47,8 +45,8 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
             let timerInterval;
             Swal.fire({
                 title: 'AI가 일정을 생성중입니다...',
-                html: '<b></b>초만큼 기다려주세요',
-                timer: 5000,
+                html: '<b></b>ns만큼 기다려주세요',
+                timer: 1000,
                 timerProgressBar: true,
                 didOpen: () => {
                     Swal.showLoading();
@@ -61,19 +59,18 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
                     clearInterval(timerInterval);
                 },
             }).then((result) => {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: '일정 생성 완료',
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                setResultModalOpen(true);
                 if (result.dismiss === Swal.DismissReason.timer) {
                     console.log('I was closed by the timer');
                 }
             });
-            Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: '일정 생성 완료',
-                showConfirmButton: false,
-                timer: 2000,
-            });
-
-            setResultModal(true);
         } catch (error) {
             console.error('일정 추천 중 오류 발생: ', error);
         }
@@ -108,7 +105,10 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
                         </InputLabel>
                         <InputLabel>
                             <p>기간</p>
-                            <SelectContent onChange={handleSelectChange} day={dayInput} />
+                            <SelectContent
+                                onChange={handleSelectChange}
+                                day={dayInput}
+                            />
                         </InputLabel>
                         <InputLabel>
                             <p>이동간의 교통수단 선택</p>
@@ -135,7 +135,6 @@ const ScheduleRecommend = ({ setRecommendModalOpen }) => {
                         <SubmitButton onClick={handleSubmit}>
                             일정 추천받기
                         </SubmitButton>
-                        {/* {resultModal && <Recommendation />} */}
                     </InputList>
                 </ModalContainer>
             </RootContainer>
