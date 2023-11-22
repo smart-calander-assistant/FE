@@ -94,7 +94,7 @@ const FooterContainer = styled.div`
     padding: 0.9375rem 3.75rem;
     justify-content: space-between;
     align-items: center;
-    background-color: #3A86FF;
+    background-color: #a9def9;
 `;
 
 const LinkIcon = styled(Link)`
