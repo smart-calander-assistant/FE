@@ -9,6 +9,7 @@ import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getAccessToken } from '../localstorage/auth';
 import { format } from 'date-fns';
+import SearchPlace from '../component/SearchPlace';
 
 export default function MyInfo({
     setMyInfoModalOpen,
@@ -28,6 +29,17 @@ export default function MyInfo({
     const [goodEnd, setGoodEnd] = useState(new Date(good_end));
     const [badStart, setBadStart] = useState(new Date(bad_start));
     const [badEnd, setBadEnd] = useState(new Date(bad_end));
+    const [placeInput, setPlaceInput] = useState('');
+    const [coordinates, setCoordinates] = useState({
+        latitude: 37.5050881,
+        longitude: 126.9571012,
+    });
+
+    const handlePlaceSelect = ({ place, coordinates }) => {
+        setPlaceInput(place);
+        setCoordinates(coordinates);
+        console.log(coordinates);
+    };
 
     const accessToken = getAccessToken();
 
@@ -235,6 +247,13 @@ export default function MyInfo({
                                     placeholderText={bad_end}
                                 />
                             </TimeBox>
+                        </InputLabel>
+                        <InputLabel>
+                        <p>내 집 위치</p>
+                            <SearchPlace
+                                onPlaceSelect={handlePlaceSelect}
+                                placeholder={'장소를 입력하세요'}
+                            />
                         </InputLabel>
                         <SubmitButton onClick={handleSubmit}>
                             정보 업데이트
