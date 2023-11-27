@@ -1,5 +1,5 @@
 import axios from '../api/axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import requests from '../api/requests';
 import { IoClose } from 'react-icons/io5';
@@ -22,6 +22,7 @@ export default function MyInfo({
     bad_id,
     bad_start,
     bad_end,
+    home,
 }) {
     const [sleepStart, setSleepStart] = useState(new Date(sleep_start));
     const [sleepEnd, setSleepEnd] = useState(new Date(sleep_end));
@@ -29,29 +30,18 @@ export default function MyInfo({
     const [goodEnd, setGoodEnd] = useState(new Date(good_end));
     const [badStart, setBadStart] = useState(new Date(bad_start));
     const [badEnd, setBadEnd] = useState(new Date(bad_end));
-    const [placeInput, setPlaceInput] = useState('');
+    const [placeInput, setPlaceInput] = useState(home.place);
     const [coordinates, setCoordinates] = useState({
-        latitude: 37.5050881,
-        longitude: 126.9571012,
+        latitude: 0,
+        longitude: 0,
     });
 
     const handlePlaceSelect = ({ place, coordinates }) => {
         setPlaceInput(place);
         setCoordinates(coordinates);
-        console.log(coordinates);
     };
 
     const accessToken = getAccessToken();
-
-    useEffect(() => {
-        // 컴포넌트가 마운트될 때, 기존 정보를 입력 필드에 표시
-        setSleepStart(new Date(sleep_start));
-        setSleepEnd(new Date(sleep_end));
-        setGoodStart(new Date(good_start));
-        setGoodEnd(new Date(good_end));
-        setBadStart(new Date(bad_start));
-        setBadEnd(new Date(bad_end));
-    }, [sleep_start, sleep_end, good_start, good_end, bad_start, bad_end]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -78,6 +68,9 @@ export default function MyInfo({
             const formattedNotFocusStartTime = format(badStart, 'HH:mm');
             const formattedNotFocusEndTime = format(badEnd, 'HH:mm');
 
+            setCoordinates(coordinates);
+            setPlaceInput(placeInput);
+
             const newMySleepInfo = {
                 id: sleep_id,
                 life: 'SLEEPING_TIME',
@@ -95,6 +88,11 @@ export default function MyInfo({
                 life: 'NOT_FOCUS_TIME',
                 startTime: formattedNotFocusStartTime,
                 endTime: formattedNotFocusEndTime,
+            };
+            const newMyPlace = {
+                longitude: coordinates.longitude,
+                latitude: coordinates.latitude,
+                place: placeInput,
             };
 
             await axios.put(
@@ -126,14 +124,11 @@ export default function MyInfo({
                     },
                 }
             );
-
-            setSleepStart('');
-            setSleepEnd('');
-            setGoodStart('');
-            setGoodEnd('');
-            setBadStart('');
-            setBadEnd('');
-
+            await axios.put(`${requests.fetchMember}/place`, newMyPlace, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                }
+            });
             setMyInfoModalOpen(false);
 
             Swal.fire({
@@ -249,10 +244,10 @@ export default function MyInfo({
                             </TimeBox>
                         </InputLabel>
                         <InputLabel>
-                        <p>내 집 위치</p>
+                            <p>내 집 위치</p>
                             <SearchPlace
                                 onPlaceSelect={handlePlaceSelect}
-                                placeholder={'장소를 입력하세요'}
+                                placeholder={placeInput}
                             />
                         </InputLabel>
                         <SubmitButton onClick={handleSubmit}>
@@ -354,6 +349,36 @@ const SubmitButton = styled.button`
 
     &:hover {
         opacity: 0.7;
+    }
+`;
+
+const SelectBox = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const TransportButton = styled.button`
+    flex: 1;
+    color: black;
+    background-color: white;
+    border: 0.1rem solid #3a86ff;
+    border-left: ${(props) =>
+        props.location === 'left' ? '0.1rem solid #3a86ff' : '0rem'};
+    border-right: ${(props) =>
+        props.location === 'right' ? '0.1rem solid #3a86ff' : ''};
+    padding: 0.5rem;
+    border-radius: ${(props) =>
+        props.location === 'left' ? '0.5rem 0 0 0.5rem' : '0 0.5rem 0.5rem 0'};
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #3a86ff;
+    }
+
+    &.selected {
+        background-color: #3a86ff;
+        color: white;
     }
 `;
 

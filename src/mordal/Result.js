@@ -5,6 +5,7 @@ import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import { getAccessToken } from '../localstorage/auth';
 import axios from '../api/axios';
 import styled from 'styled-components';
+import '../styles/Result.css';
 
 const Result = ({ setResultModalOpen }) => {
     const [plans, setPlans] = useState([]);
@@ -67,7 +68,7 @@ const Result = ({ setResultModalOpen }) => {
 
         fetchData();
     }, []);
-    
+
     const initialEvents = scheduleList.map((plan) => {
         return {
             id: plan.id,
@@ -122,6 +123,8 @@ const Result = ({ setResultModalOpen }) => {
                             }}
                             events={initialEvents}
                         />
+                    </InputList>
+                    <InputList>
                         <SubmitButton onClick={handleSubmit}>
                             저장하기
                         </SubmitButton>
@@ -189,10 +192,10 @@ const InputList = styled.div`
         background-color: white;
     }
 
-    &::-webkit-scrollbar-thumb {
+    /* &::-webkit-scrollbar-thumb {
         background-color: red;
         border-radius: 1rem;
-    }
+    } */
 `;
 
 const SubmitButton = styled.button`

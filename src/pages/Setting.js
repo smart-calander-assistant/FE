@@ -23,6 +23,7 @@ export default function Setting() {
     const [myFocusInfo, setMyFocusInfo] = useState('');
     const [myNotFocusInfo, setMyNotFocusInfo] = useState('');
     const [myWeightInfo, setMyWeightInfo] = useState('');
+    const [myPlaceInfo, setMyPlaceInfo] = useState('');
 
     const navigate = useNavigate();
 
@@ -121,13 +122,23 @@ export default function Setting() {
                     },
                 }
             );
-
+            const myPlaceInfo = await axios.get(
+                requests.fetchMember,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            
             setMySleepInfo(mySleepInfo.data[0]);
             setMyFocusInfo(myFocusInfo.data[0]);
             setMyNotFocusInfo(myNotFocusInfo.data[0]);
+            setMyPlaceInfo(myPlaceInfo.data);
             console.log('a', mySleepInfo);
             console.log('b', myFocusInfo);
             console.log('c', myNotFocusInfo);
+            console.log("place", myPlaceInfo.data);
         } catch (error) {
             console.error('내 정보 확인 중 오류 발생: ', error);
         }
@@ -208,9 +219,6 @@ export default function Setting() {
                     onClick={handleInfoClick}
                 />
                 {myInfoModalOpen && (
-                    console.log(mySleepInfo),
-                    console.log(myFocusInfo),
-                    console.log(myNotFocusInfo),(
                     <MyInfo
                         setMyInfoModalOpen={setMyInfoModalOpen}
                         sleep_id={mySleepInfo.id}
@@ -222,7 +230,8 @@ export default function Setting() {
                         bad_id={myNotFocusInfo.id}
                         bad_start={`${defaultDate} ${myNotFocusInfo.startTime}`}
                         bad_end={`${defaultDate} ${myNotFocusInfo.endTime}`}
-                    />)
+                        home={myPlaceInfo}
+                    />
                 )}
                 <ExplainContent
                     title={'AI 일정추천 우선순위'}

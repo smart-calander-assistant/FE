@@ -24,6 +24,9 @@ const PlanCard = ({
     const ref = useRef();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [editPlanModalOpen, setEditPlanModalOpen] = useState(false);
+    const currentDate = new Date();
+    const endTimeDate = new Date(end_time);
+    const isProceed = currentDate < endTimeDate ? true : false;
 
     const toggleMenu = () => {
         setIsMenuOpen(true);
@@ -65,10 +68,11 @@ const PlanCard = ({
 
     return (
         <TodoContainer>
-            <HeaderBox>
+            <HeaderBox isProceed={isProceed}>
                 <PriorityBox>
                     <IoFlagSharp size={'1rem'} />
-                    <p>진행 중</p>
+                    {isProceed && <p>Plan 미완료</p>}
+                    {!isProceed && <p>Plan 완료</p>}
                 </PriorityBox>
                 {!isMenuOpen && (
                     <IoEllipsisHorizontalSharp
@@ -87,7 +91,11 @@ const PlanCard = ({
             </HeaderBox>
             <ContentBox>
                 <TitleBox>
-                    <IoListCircleOutline size={'1.5rem'} color={'#0ACF83'} />
+                <IoListCircleOutline
+                        isProceed={isProceed}
+                        size={'1.5rem'}
+                        color={isProceed ? '#0ACF83' : '#8572FF'}
+                    />
                     <p>{title}</p>
                 </TitleBox>
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
@@ -131,12 +139,13 @@ const HeaderBox = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem 0 0.5rem;
-    background-color: #0acf83;
+    background-color: ${(props) => (props.isProceed ? '#0ACF83' : '#8572FF')};
     border-radius: 0.5rem 0.5rem 0 0;
     height: 2.5rem;
 
     color: white;
 `;
+
 const PriorityBox = styled.div`
     display: flex;
     align-items: center;

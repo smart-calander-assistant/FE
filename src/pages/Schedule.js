@@ -14,13 +14,78 @@ import 'swiper/components/navigation/navigation.min.css';
 import 'swiper/components/pagination/pagination.min.css';
 import 'swiper/components/scrollbar/scrollbar.min.css';
 
+import { getAccessToken } from '../localstorage/auth';
+import axios from '../api/axios';
+import requests from '../api/requests';
+import { format } from 'date-fns';
+
 export default function Schedule() {
     const currentDate = new Date();
 
     const [dayList, setDayList] = useState([]);
-    const [selectedDay, setSelectedDay] = useState(new Date(currentDate).getDate());
-    // const [scheduleList, setScheduleList] = useState([]);
+    const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
+    const [datePlan, setDatePlan] = useState([]);
+    const [transmitInfo, setTransmitInfo] = useState([]);
+    const [combinedSchedule, setCombinedSchedule] = useState([]);
+    const [changed, setChanged] = useState(false);
+
+    var null_cnt = 0;
+
+    const accessToken = getAccessToken();
     const dayKoList = ['일', '월', '화', '수', '목', '금', '토'];
+
+    const handleDateClick = async (date) => {
+        const formattedMonth = date.month < 10 ? `0${date.month}` : date.month;
+        const formattedDay = date.date < 10 ? `0${date.date}` : date.date;
+        const stringDate = `${date.year}-${formattedMonth}-${formattedDay}`;
+
+        try {
+            setChanged(true);
+            const dailySchedule = await axios.get(
+                `https://k3w9ml51qe.execute-api.ap-northeast-2.amazonaws.com/route?date=${stringDate}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            console.log(stringDate);
+            const dailyPlan = await axios.get(
+                `${requests.fetchPlan}/calendar/${stringDate}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            setDatePlan(dailyPlan.data);
+            setTransmitInfo(dailySchedule.data);
+            setSelectedDay(date.date);
+
+            const combinedArray = dailyPlan.data.concat(dailySchedule);
+            setCombinedSchedule(combinedArray);
+            console.log('교통정보', dailySchedule);
+            console.log('plan정보', dailyPlan);
+        } catch (error) {
+            console.error('datePlan error', error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const newDate = {
+                date: selectedDay,
+                month: (currentDate.getMonth() % 12) + 1,
+                year: 1900 + currentDate.getYear(),
+            };
+            if (newDate.date !== undefined) {
+                handleDayClick(newDate);
+            }
+        };
+
+        fetchData();
+    }, [accessToken, changed]);
 
     useEffect(() => {
         const monthLater = new Date(currentDate);
@@ -33,7 +98,8 @@ export default function Schedule() {
             dayList.push({
                 day: dayKoList[currentDateCopy.getDay()],
                 date: currentDateCopy.getDate(),
-                month: currentDateCopy.getMonth(),
+                month: (currentDateCopy.getMonth() % 12) + 1,
+                year: 1900 + currentDateCopy.getYear(),
             });
 
             currentDateCopy.setDate(currentDateCopy.getDate() + 1);
@@ -41,55 +107,13 @@ export default function Schedule() {
 
         setDayList(dayList);
 
-        // scheduleList 초기화나 API에서 스케줄 목록을 가져오는 코드
+        // dayList 초기화나 API에서 스케줄 목록을 가져오는 코드
         // ...
     }, []);
 
-    useEffect(() => {
-        
-    }, [selectedDay])
-
-    const scheduleList = [
-        {
-            title: 'aaaa',
-            place: '장소1',
-            start_time: '08:00',
-            end_time: '10:00',
-            type: 'schedule',
-        },
-        {
-            time: 60,
-            start_time: '10:00',
-            end_time: '11:00',
-            type: 'transfortation',
-        },
-        {
-            title: 'aaaa',
-            place: '장소3',
-            start_time: '11:30',
-            end_time: '13:00',
-            type: 'schedule',
-        },
-        {
-            title: 'aaaa',
-            place: '장소5',
-            start_time: '16:00',
-            end_time: '18:00',
-            type: 'schedule',
-        },
-        { time: 90, start_time: '18:00', end_time: '19:30', type: 'car' },
-        {
-            title: 'aaaa',
-            place: '장소7',
-            start_time: '21:00',
-            end_time: '22:00',
-            type: 'schedule',
-        },
-        { time: 20, start_time: '22:00', end_time: '22:20', type: 'onfoot' },
-    ];
-
-    const handleDayClick = (day) => {
-        setSelectedDay(day);
+    const handleDayClick = (date) => {
+        setSelectedDay(date.day);
+        handleDateClick(date);
     };
 
     return (
@@ -99,9 +123,10 @@ export default function Schedule() {
                 <Swiper
                     modules={[Navigation, Pagination, Scrollbar, A11y]}
                     loop={false} // loop 기능을 사용할 것인지
-                    breakpoints={{ 0: {
-                        slidesPerView: 7, // 한번에 보이는 슬라이드 개수
-                        slidesPerGroup: 5, // 몇개씩 슬라이드 할지
+                    breakpoints={{
+                        0: {
+                            slidesPerView: 7, // 한번에 보이는 슬라이드 개수
+                            slidesPerGroup: 5, // 몇개씩 슬라이드 할지
                         },
                     }}
                 >
@@ -112,7 +137,7 @@ export default function Schedule() {
                                 date={item.date}
                                 month={item.month}
                                 selected={selectedDay === item.date}
-                                onClick={() => handleDayClick(item.date)}
+                                onClick={() => handleDayClick(item)}
                             />
                         </SwiperSlide>
                     ))}
@@ -120,43 +145,55 @@ export default function Schedule() {
             </DayContainer>
             <ContentWrapper>
                 <ScheduleContainer>
-                    {scheduleList.map((item, index) => {
+                    {datePlan.map((item, index) => {
                         let time_diff;
-                        if (index < scheduleList.length - 1) {
+                        if (index < datePlan.length - 1) {
                             const nextStartTime =
-                                scheduleList[index + 1].start_time;
+                                datePlan[index + 1].startTime.slice(-5);
+                            const slicedEndTime = item.endTime.slice(-5);
                             time_diff = calculateTimeDifference(
-                                item.end_time,
+                                slicedEndTime,
                                 nextStartTime
                             );
                         } else {
                             time_diff = 0;
                         }
 
-                        if (item.type === 'schedule') {
-                            return (
-                                <ScheduleContent
-                                    key={index}
-                                    title={item.title}
-                                    place={item.place}
-                                    start_time={item.start_time}
-                                    end_time={item.end_time}
-                                    margin={time_diff}
-                                />
-                            );
-                        } else {
-                            return (
+                        return (
+                            <ScheduleContent
+                                key={index}
+                                title={item.content}
+                                place={item.place}
+                                start_time={item.startTime.slice(-5)}
+                                end_time={item.endTime.slice(-5)}
+                                margin={time_diff}
+                            />
+                        );
+                    })}
+                    <TransmitBox>교통정보</TransmitBox>
+                    {transmitInfo.length > 0 ? (
+                        transmitInfo.map((item, index) =>
+                            item !== null ? (
                                 <TransfortationContent
                                     key={index}
-                                    time={item.time}
-                                    type={item.type}
-                                    start_time={item.start_time}
-                                    end_time={item.end_time}
-                                    margin={time_diff}
+                                    time={Math.ceil(item.total_time / 60)}
+                                    type_list={item.mode_list}
+                                    time_list={item.total_time_list}
+                                    start_time={item.departure_time}
+                                    end_time={item.arrival_time}
                                 />
-                            );
-                        }
-                    })}
+                            ) : (
+                                ((null_cnt += 1), null)
+                            )
+                        )
+                    ) : (
+                        <></>
+                    )}
+                    {transmitInfo.length === 2 && null_cnt === 2 ? (
+                        <MessageBox>해당날짜에 교통정보가 없습니다</MessageBox>
+                    ) : (
+                        <></>
+                    )}
                 </ScheduleContainer>
             </ContentWrapper>
             <Footer label={'schedule'} />
@@ -189,17 +226,13 @@ const DayContainer = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-    display: flex;
+    flex: 1;
     overflow-y: auto;
     scroll-behavior: smooth;
 
     &::-webkit-scrollbar {
         width: 5px;
     }
-    /* &::-webkit-scrollbar-thumb {
-        background-color: gray;
-        border-radius: 1rem;
-    } */
     &::-webkit-scrollbar-track {
         background-color: #f5f5f5;
     }
@@ -210,4 +243,20 @@ const ScheduleContainer = styled.div`
     flex: 1;
     flex-direction: column;
     /* gap: 1rem; */
+`;
+
+const TransmitBox = styled.div`
+    display: flex;
+    font-size: x-large;
+    margin: 3rem 1rem 1rem 1rem;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const MessageBox = styled.p`
+    display: flex;
+    justify-content: center;
+    font-size: large;
+    font-weight: 600;
+    margin: 5rem 0;
 `;

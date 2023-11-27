@@ -110,17 +110,6 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setResultModalOpen }) => {
                                 day={dayInput}
                             />
                         </InputLabel>
-                        <InputLabel>
-                            <p>이동간의 교통수단 선택</p>
-                            <SelectBox>
-                                <TransportButton location='left'>
-                                    대중교통
-                                </TransportButton>
-                                <TransportButton location='right'>
-                                    자동차
-                                </TransportButton>
-                            </SelectBox>
-                        </InputLabel>
                         {/* <InputLabel>
                             <p>추천 시 취미생활 포함 여부</p>
                             <SelectBox>
@@ -210,36 +199,6 @@ const InputLabel = styled.div`
     font-size: medium;
     margin: 0.5rem 0;
     gap: 0.5rem;
-`;
-
-const SelectBox = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const TransportButton = styled.button`
-    flex: 1;
-    color: black;
-    background-color: white;
-    border: 0.1rem solid #3a86ff;
-    border-left: ${(props) =>
-        props.location === 'left' ? '0.1rem solid #3a86ff' : '0rem'};
-    border-right: ${(props) =>
-        props.location === 'right' ? '0.1rem solid #3a86ff' : ''};
-    padding: 0.5rem;
-    border-radius: ${(props) =>
-        props.location === 'left' ? '0.5rem 0 0 0.5rem' : '0 0.5rem 0.5rem 0'};
-    transition: background-color 0.3s;
-
-    &:hover {
-        background-color: #3a86ff;
-    }
-
-    &.selected {
-        background-color: #3a86ff;
-        color: white;
-    }
 `;
 
 const SubmitButton = styled.button`

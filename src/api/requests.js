@@ -14,6 +14,8 @@ const requests = {
     fetchReissue: '/auth/reissue',
     // Importance 관련 API
     fetchWeight: '/importance',
+    // Member 관련 API
+    fetchMember: '/member',
 };
 
 export default requests;

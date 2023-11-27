@@ -19,8 +19,8 @@ const AddTodo = ({ setAddTodoModalOpen, onChange }) => {
     const [placeInput, setPlaceInput] = useState('');
     const accessToken = getAccessToken();
     const [coordinates, setCoordinates] = useState({
-        latitude: 37.5050881,
-        longitude: 126.9571012,
+        latitude: 0,
+        longitude: 0,
     });
 
     const handlePlaceSelect = ({ place, coordinates }) => {

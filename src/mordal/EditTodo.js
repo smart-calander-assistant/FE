@@ -25,8 +25,8 @@ const EditTodo = ({
     const [priorityInput, setPriorityInput] = useState(priority);
     const [placeInput, setPlaceInput] = useState(place);
     const [coordinates, setCoordinates] = useState({
-        latitude: 37.5050881,
-        longitude: 126.9571012,
+        latitude: 0,
+        longitude: 0,
     });
     const accessToken = getAccessToken();
 

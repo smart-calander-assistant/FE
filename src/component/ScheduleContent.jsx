@@ -15,6 +15,7 @@ const ScheduleContent = ({ title, place, start_time, end_time, margin }) => {
     } else {
         time = (endTime[0] - startTime[0]) * 60 + (endTime[1] - startTime[1]);
     }
+
     return (
         <RootContainer height={time} margin={margin}>
             <TimeContainer>
@@ -23,10 +24,8 @@ const ScheduleContent = ({ title, place, start_time, end_time, margin }) => {
                 <TimeSlot>{end_time}</TimeSlot>
             </TimeContainer>
             <ScheduleContainer>
-                <TitleBox>
-                    <p>{title}</p>
-                    <p>{place}</p>
-                </TitleBox>
+                <TitleBox>{title}</TitleBox>
+                <PlaceBox>{place}</PlaceBox>
             </ScheduleContainer>
         </RootContainer>
     );
@@ -44,16 +43,13 @@ const RootContainer = styled.div`
 const ScheduleContainer = styled.div`
     display: flex;
     flex: 1;
+    flex-direction: column;
     background-color: #de496e;
-    margin: 0.25rem;
+    color: white;
+    margin: 0 1rem;
     padding: 1rem;
     border-radius: 1rem;
-`;
-
-const TitleBox = styled.p`
-    display: flex;
-    flex-direction: column;
-    color: white;
+    gap: 1rem;
     justify-content: space-between;
 `;
 
@@ -67,4 +63,13 @@ const TimeContainer = styled.div`
 
 const TimeSlot = styled.div`
     color: gray;
+`;
+
+const TitleBox = styled.p`
+    font-size: large;
+`;
+
+const PlaceBox = styled.div`
+    display: flex;
+    justify-content: end;
 `;

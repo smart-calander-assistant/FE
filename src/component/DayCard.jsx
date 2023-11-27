@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const DayCard = ({ day, date, month, selected, onClick }) => {
+
     return (
         <DayContainer selected={selected} onClick={onClick}>
             <DayBox>

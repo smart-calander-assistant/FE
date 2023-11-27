@@ -1,54 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { IoSubway, IoFootsteps } from 'react-icons/io5';
-import { AiFillCar } from 'react-icons/ai';
+import { format } from 'date-fns';
+import TransInfo from '../mordal/TransInfo';
 
-const TransfortationContent = ({ time, type, start_time, end_time, margin }) => {
-    let iconContent;
-    let title;
+const TransfortationContent = ({
+    time,
+    type_list,
+    start_time,
+    end_time,
+    time_list,
+}) => {
+    const [transInfoModalOpen, setTransInfoModalOpen] = useState(false);
 
-    if (type === 'transfortation') {
-        if (time >= 60) {
-            iconContent = (
-                <IconContainer>
-                    <IoSubway size={'2rem'} />
-                </IconContainer>
-            );
-        }
-        title = '대중교통';
-    } else if (type === 'car') {
-        if (time >= 60) {
-            iconContent = (
-                <IconContainer>
-                    <AiFillCar size={'2rem'} />
-                </IconContainer>
-            );
-        }
-        title = '자동차';
-    } else if (type === 'onfoot') {
-        if (time >= 0) {
-            iconContent = (
-                <IconContainer>
-                    <IoFootsteps size={'2rem'} />
-                </IconContainer>
-            );
-        }
-        title = '도보';
-    }
+    const start_date = new Date(start_time * 1000);
+    const end_date = new Date(end_time * 1000);
+    const start_hours = start_date.getHours();
+    const end_hours = end_date.getHours();
+    const start_minutes = start_date.getMinutes();
+    const end_minutes = end_date.getMinutes();
+
+    const formattedStartHours = start_hours < 10 ? `0${start_hours}` : start_hours;
+    const formattedStartMinutes = start_minutes < 10 ? `0${start_minutes}` : start_minutes;
+    const formattedEndHours = end_hours < 10 ? `0${end_hours}` : end_hours;
+    const formattedEndMinutes = end_minutes < 10 ? `0${end_minutes}` : end_minutes;
+
+    const startTime = formattedStartHours + ':' + formattedStartMinutes;
+    const endTime = formattedEndHours + ':' + formattedEndMinutes;
+    
+    const handleClick = () => {
+        setTransInfoModalOpen(true);
+    };
+
     return (
-        <RootContainer height={time} margin={margin}>
+        <RootContainer>
             <TimeContainer>
-                <TimeSlot>{start_time}</TimeSlot>
+                <TimeSlot>{startTime}</TimeSlot>
                 <TimeSlot> ~ </TimeSlot>
-                <TimeSlot>{end_time}</TimeSlot>
+                <TimeSlot>{endTime}</TimeSlot>
             </TimeContainer>
-            <ScheduleContainer>
-                {iconContent}
-                <TitleBox gap={time}>
-                    <p>{title} 이용</p>
-                    <p>{time} 소요 예정</p>
+            <ScheduleContainer onClick={handleClick}>
+                <TitleBox>
+                    <p>총 {time}분 소요 예정</p>
                 </TitleBox>
             </ScheduleContainer>
+            {transInfoModalOpen && (
+                <TransInfo
+                    time_list={time_list}
+                    type_list={type_list}
+                    setTransInfoModalOpen={setTransInfoModalOpen}
+                />
+            )}
         </RootContainer>
     );
 };
@@ -59,32 +60,26 @@ const RootContainer = styled.div`
     display: flex;
     /* width: 100%; */
     /* height: ${(props) => props.height / 30}rem; */
-    margin-bottom: ${(props) => props.margin / 60}rem;
+    margin: 1rem;
+    /* margin-bottom: ${(props) => props.margin / 60}rem; */
 `;
 
-const ScheduleContainer = styled.div`
+const ScheduleContainer = styled.button`
     display: flex;
     flex: 1;
     margin: 0.25rem;
     padding: 1rem;
     border-radius: 1rem;
     background-color: #ffbe0b;
-`;
-
-const IconContainer = styled.div`
-    display: flex;
-    padding: 0.5rem;
-    background-color: #f9d7b0;
-    border-radius: 1rem;
+    border: none;
 `;
 
 const TitleBox = styled.p`
     display: flex;
     flex-direction: column;
     font-weight: 600;
-    padding: 0 1rem;
     justify-content: center;
-    gap: ${(props) => (props.gap < 60 ? 0 : 0.25)}rem;
+    align-items: center;
 `;
 
 const TimeContainer = styled.div`
@@ -93,6 +88,8 @@ const TimeContainer = styled.div`
     padding: 0 1rem;
     align-items: center;
     justify-content: center;
+
+    width: 2rem;
 `;
 
 const TimeSlot = styled.div`
