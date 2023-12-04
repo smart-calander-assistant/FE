@@ -52,7 +52,7 @@ export default function Schedule() {
 
             console.log(stringDate);
             const dailyPlan = await axios.get(
-                `${requests.fetchPlan}/calendar/${stringDate}`,
+                `https://k3w9ml51qe.execute-api.ap-northeast-2.amazonaws.com/all?date=${stringDate}`,
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,

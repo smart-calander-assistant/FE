@@ -8,16 +8,16 @@ import requests from './../api/requests';
 import styled from 'styled-components';
 import '../styles/Result.css';
 import CalendarLib from '../component/CalendarLib';
-import defaultaxios from 'axios';
-
-const recommend = defaultaxios.create({
-    baseURL: 'https://k3w9ml51qe.execute-api.ap-northeast-2.amazonaws.com',
-});
+import { useAppContext } from '../context/AppContext';
+import Swal from 'sweetalert2';
 
 
 const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
     const [plans, setPlans] = useState([]);
+    const [recommendPlans, setRecommendPlans] = useState([]);
+    const [modifyPlans, setModifyPlans] = useState([]);
     const [mySleepInfo, setMySleepInfo] = useState('');
+    const { state, dispatch } = useAppContext();
 
     const accessToken = getAccessToken();
 
@@ -29,13 +29,25 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
 
         const fetchData = async () => {
             try {
-                const response = await recommend.get(`${requests.fetchRecommend}?date=${days}`, {
+                const recommends = await axios.get(`https://k3w9ml51qe.execute-api.ap-northeast-2.amazonaws.com${requests.fetchRecommend}?date=${days}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                setPlans(response.data);
-                console.log("response 데이터", response);
+                // const data = await recommended.json();
+                // dispatch({ type: 'SET_PLANS', payload: data });
+
+                setRecommendPlans(recommends.data.recommend);
+                console.log("recommended 데이터", recommends);
+
+                const plan = await axios.get(`${requests.fetchPlan}/date/${days}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    }
+                })
+
+                setPlans(plan.data);
+                console.log("plan 데이터", plan);
 
                 const sleepInfo = await axios.get(
                     `${requests.fetchLife}?life=${'SLEEPING_TIME'}`,
@@ -46,15 +58,37 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
                     }
                 );
                 setMySleepInfo(parseInt(sleepInfo.data[0].endTime.split(":")[0], 10));
+                
             } catch (error) {
                 console.error('fetching error', error);
             }
         };
         fetchData();
-    }, []);
+    }, [days, dispatch]);
 
     const handleSubmit = async () => {
         // 내용 무수히 추가
+        // recommendPlans에는 추천받은 Plan값
+        // modifyPlans는 recommendPlans를 수정한 Plan값
+        // 두값을 비교해서 차이점을 POST 해야함
+
+
+        try {
+            await axios.post(`${requests.fetchRecommend}`, recommendPlans, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: '추천 일정을 저장했습니다',
+                showConfirmButton: false,
+                timer: 1000,
+            });
+        } catch (error) {
+            console.error('추천저장 오류', error);
+        }
         setNewScheduleModalOpen(false);
     };
 

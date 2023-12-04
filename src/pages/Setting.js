@@ -60,7 +60,9 @@ export default function Setting() {
                 if (myFinishCount.data === 0) {
                     setMyTodoSuccessRate(0);
                 } else {
-                    setMyTodoSuccessRate(((myFinishCount.data / myCount.data) * 100).toFixed(1));
+                    setMyTodoSuccessRate(
+                        ((myFinishCount.data / myCount.data) * 100).toFixed(1)
+                    );
                 }
 
                 console.log('Todo개수 데이터:', myCount.data);
@@ -122,15 +124,12 @@ export default function Setting() {
                     },
                 }
             );
-            const myPlaceInfo = await axios.get(
-                requests.fetchMember,
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            
+            const myPlaceInfo = await axios.get(requests.fetchMember, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
             setMySleepInfo(mySleepInfo.data[0]);
             setMyFocusInfo(myFocusInfo.data[0]);
             setMyNotFocusInfo(myNotFocusInfo.data[0]);
@@ -138,7 +137,7 @@ export default function Setting() {
             console.log('a', mySleepInfo);
             console.log('b', myFocusInfo);
             console.log('c', myNotFocusInfo);
-            console.log("place", myPlaceInfo.data);
+            console.log('place', myPlaceInfo.data);
         } catch (error) {
             console.error('내 정보 확인 중 오류 발생: ', error);
         }
@@ -192,6 +191,31 @@ export default function Setting() {
         setWeightModalOpen(true);
     };
 
+    const handleReset = async () => {
+        Swal.fire({
+            title: '정말 일정기록을 초기화 하시겠습니까?',
+            icon: 'warning',
+            text: '모든 정보가 사라지게됩니다.',
+            showCancelButton: true,
+            confirmButtonColor: '#3A86FF',
+            cancelButtonColor: '#de496e',
+            confirmButtonText: 'Yes',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                try {
+                    axios.delete(`${requests.fetchMember}/reset`, {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    });
+                } catch (error) {
+                    console.error('초기화 중 오류 발생: ', error);
+                }
+                Swal.fire('기록초기화 완료', 'success');
+            }
+        });
+    };
+
     return (
         <RootContainer>
             <Header label={'설정'} />
@@ -240,16 +264,18 @@ export default function Setting() {
                     }
                     onClick={handleWeight}
                 />
-                {weightModalOpen && (
-                    console.log(myWeightInfo),
-                    (<Weight
-                        setWeightModalOpen={setWeightModalOpen}
-                        myWeight={myWeightInfo.data}
-                    />)
-                )}
+                {weightModalOpen &&
+                    (console.log(myWeightInfo),
+                    (
+                        <Weight
+                            setWeightModalOpen={setWeightModalOpen}
+                            myWeight={myWeightInfo.data}
+                        />
+                    ))}
                 <ExplainContent
                     title={'일정 기록 초기화'}
                     content={'일정 기록 현황을 전부 초기화할 수 있습니다!!'}
+                    onClick={handleReset}
                 />
                 <ExplainContent
                     title={'로그아웃'}
