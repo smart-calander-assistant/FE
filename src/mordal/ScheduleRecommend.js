@@ -11,11 +11,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import SelectContent from '../component/SelectContent';
 
-const ScheduleRecommend = ({ setRecommendModalOpen, setResultModalOpen }) => {
+const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, setResultModalOpen, setDays, days }) => {
     const [startTimeInput, setStartTimeInput] = useState(
         new Date().setDate(new Date().getDate() + 1)
     );
-    const [dayInput, setDayInput] = useState(5);
+
     const accessToken = getAccessToken();
 
     const handleSubmit = async (e) => {
@@ -66,7 +66,8 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setResultModalOpen }) => {
                     showConfirmButton: false,
                     timer: 2000,
                 });
-                setResultModalOpen(true);
+                // setResultModalOpen(true);
+                setNewScheduleModalOpen(true);
                 if (result.dismiss === Swal.DismissReason.timer) {
                     console.log('I was closed by the timer');
                 }
@@ -77,7 +78,7 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setResultModalOpen }) => {
     };
 
     const handleSelectChange = (dayInput) => {
-        setDayInput(dayInput);
+        setDays(dayInput);
     };
 
     return (
@@ -107,20 +108,9 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setResultModalOpen }) => {
                             <p>기간</p>
                             <SelectContent
                                 onChange={handleSelectChange}
-                                day={dayInput}
+                                day={days}
                             />
                         </InputLabel>
-                        {/* <InputLabel>
-                            <p>추천 시 취미생활 포함 여부</p>
-                            <SelectBox>
-                                <TransportButton location='left'>
-                                    포함
-                                </TransportButton>
-                                <TransportButton location='right'>
-                                    불포함
-                                </TransportButton>
-                            </SelectBox>
-                        </InputLabel> */}
                         <SubmitButton onClick={handleSubmit}>
                             일정 추천받기
                         </SubmitButton>

@@ -145,31 +145,36 @@ export default function Schedule() {
             </DayContainer>
             <ContentWrapper>
                 <ScheduleContainer>
-                    {datePlan.map((item, index) => {
-                        let time_diff;
-                        if (index < datePlan.length - 1) {
-                            const nextStartTime =
-                                datePlan[index + 1].startTime.slice(-5);
-                            const slicedEndTime = item.endTime.slice(-5);
-                            time_diff = calculateTimeDifference(
-                                slicedEndTime,
-                                nextStartTime
-                            );
-                        } else {
-                            time_diff = 0;
-                        }
+                    {datePlan.length === 0 ? (
+                        <MessageBox>해당날짜에 일정정보가 없습니다</MessageBox>
+                    ) : (
+                        datePlan.map((item, index) => {
+                            let time_diff;
+                            if (index < datePlan.length - 1) {
+                                const nextStartTime =
+                                    datePlan[index + 1].startTime.slice(-5);
+                                const slicedEndTime = item.endTime.slice(-5);
+                                time_diff = calculateTimeDifference(
+                                    slicedEndTime,
+                                    nextStartTime
+                                );
+                            } else {
+                                time_diff = 0;
+                            }
 
-                        return (
-                            <ScheduleContent
-                                key={index}
-                                title={item.content}
-                                place={item.place}
-                                start_time={item.startTime.slice(-5)}
-                                end_time={item.endTime.slice(-5)}
-                                margin={time_diff}
-                            />
-                        );
-                    })}
+                            return (
+                                <ScheduleContent
+                                    key={index}
+                                    title={item.content}
+                                    place={item.place}
+                                    start_time={item.startTime.slice(-5)}
+                                    end_time={item.endTime.slice(-5)}
+                                    margin={time_diff}
+                                />
+                            );
+                        })
+                    )}
+
                     <TransmitBox>교통정보</TransmitBox>
                     {transmitInfo.length > 0 ? (
                         transmitInfo.map((item, index) =>
@@ -258,5 +263,5 @@ const MessageBox = styled.p`
     justify-content: center;
     font-size: large;
     font-weight: 600;
-    margin: 5rem 0;
+    margin: 4rem 0;
 `;

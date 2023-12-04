@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
-    IoAlarmOutline,
     IoListCircleOutline,
     IoFlagSharp,
     IoEllipsisHorizontalSharp,
@@ -17,6 +16,9 @@ const TodoCard = ({
     priority,
     place,
     title,
+    latitude,
+    longitude,
+    category,
     isCompleted,
     onEdit,
     onDelete,
@@ -117,12 +119,9 @@ const TodoCard = ({
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
-                    {!isCompleted && (
-                        <AlarmBox>
-                            <IoAlarmOutline size={'1rem'} />
-                            <p>08:30 PM</p>
-                        </AlarmBox>
-                    )}
+                    <TypeBox>
+                    <p>{category}</p>
+                </TypeBox>
                     {isCompleted && <p> </p>}
                     <TimeBox>
                         <p>마감기한 : {deadline}</p>
@@ -135,6 +134,9 @@ const TodoCard = ({
                     title={title}
                     deadline={deadline}
                     place={place}
+                    latitude={latitude}
+                    longitude={longitude}
+                    category={category}
                     priority={priority}
                     setEditTodoModalOpen={setEditTodoModalOpen}
                     onChange={onChange}
@@ -219,9 +221,8 @@ const TimeContainer = styled.div`
     font-size: smaller;
 `;
 
-const AlarmBox = styled.div`
+const TypeBox = styled.div`
     display: flex;
-    color: #ff486a;
     align-items: center;
     gap: 0.5rem;
 `;

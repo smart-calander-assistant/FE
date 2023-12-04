@@ -16,6 +16,10 @@ const requests = {
     fetchWeight: '/importance',
     // Member 관련 API
     fetchMember: '/member',
+    // Recommend 관련 API
+    fetchRecommend: '/recommend',
+    // Category 관련 API
+    fetchCategory: '/category',
 };
 
 export default requests;

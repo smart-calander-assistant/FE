@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
-    IoAlarmOutline,
     IoListCircleOutline,
     IoFlagSharp,
     IoEllipsisHorizontalSharp,
@@ -16,6 +15,9 @@ const PlanCard = ({
     start_time,
     end_time,
     place,
+    latitude,
+    longitude,
+    category,
     title,
     onEdit,
     onDelete,
@@ -101,10 +103,9 @@ const PlanCard = ({
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
-                    <AlarmBox>
-                        <IoAlarmOutline size={'1rem'} />
-                        <p>08:30 PM</p>
-                    </AlarmBox>
+                    <TypeBox>
+                        <p>{category}</p>
+                    </TypeBox>
                     <TimeBox>
                         <p>
                             {start_time} ~ {end_time}
@@ -119,6 +120,9 @@ const PlanCard = ({
                     start_time={start_time}
                     end_time={end_time}
                     place={place}
+                    latitude={latitude}
+                    longitude={longitude}
+                    category={category}
                     setEditPlanModalOpen={setEditPlanModalOpen}
                     onChange={onChange}
                 />
@@ -201,9 +205,8 @@ const TimeContainer = styled.div`
     font-size: smaller;
 `;
 
-const AlarmBox = styled.div`
+const TypeBox = styled.div`
     display: flex;
-    color: #ff486a;
     align-items: center;
     gap: 0.5rem;
 `;

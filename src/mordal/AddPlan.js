@@ -10,17 +10,20 @@ import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
+import SelectCategory from '../component/SelectCategory';
 
-const AddPlan = ({ setAddPlanModalOpen, onChange }) => {
+const AddPlan = ({ setAddPlanModalOpen, onChange, categoryList }) => {
     const [titleInput, setTitleInput] = useState('');
     const [startTimeInput, setStartTimeInput] = useState('');
     const [endTimeInput, setEndTimeInput] = useState('');
     const [placeInput, setPlaceInput] = useState('');
-    const accessToken = getAccessToken();
+    const [categoryInput, setCategoryInput] = useState('');
     const [coordinates, setCoordinates] = useState({
         latitude: 0,
         longitude: 0,
     });
+
+    const accessToken = getAccessToken();
 
     const handlePlaceSelect = ({ place, coordinates }) => {
         setPlaceInput(place);
@@ -40,6 +43,15 @@ const AddPlan = ({ setAddPlanModalOpen, onChange }) => {
                     text: '제목과 시간정보는 반드시 입력해야 합니다',
                 });
                 return;
+            }
+            if (categoryInput === '') {
+                Swal.fire({
+                    icon: 'error',
+                    text: '카테고리를 입력해주세요',
+                });
+                throw new Error(
+                    'category값이 null입니다.'
+                );
             }
 
             const startDate = new Date(startTimeInput);
@@ -68,6 +80,7 @@ const AddPlan = ({ setAddPlanModalOpen, onChange }) => {
                 place: placeInput,
                 latitude: coordinates.latitude,
                 longitude: coordinates.longitude,
+                category: categoryInput,
             };
 
             console.log('newPlan:', newPlan);
@@ -101,6 +114,10 @@ const AddPlan = ({ setAddPlanModalOpen, onChange }) => {
             console.error('Plan 추가 중 오류 발생: ', error);
         }
     };
+
+    const handleCategory = (category) => {
+        setCategoryInput(category);
+    }
 
     return (
         <ViewContainer>
@@ -148,6 +165,10 @@ const AddPlan = ({ setAddPlanModalOpen, onChange }) => {
                                 dateFormat='yyyy-MM-dd HH:mm'
                                 placeholderText='종료시간을 선택하세요'
                             />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>카테고리</p>
+                            <SelectCategory onChange={handleCategory} categoryList={categoryList}/>
                         </InputLabel>
                         <InputLabel>
                             <p>장소</p>

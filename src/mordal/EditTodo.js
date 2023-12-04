@@ -16,6 +16,9 @@ const EditTodo = ({
     deadline,
     priority,
     place,
+    latitude,
+    longitude,
+    category,
     title,
     setEditTodoModalOpen,
     onChange,
@@ -25,8 +28,8 @@ const EditTodo = ({
     const [priorityInput, setPriorityInput] = useState(priority);
     const [placeInput, setPlaceInput] = useState(place);
     const [coordinates, setCoordinates] = useState({
-        latitude: 0,
-        longitude: 0,
+        latitude: latitude,
+        longitude: longitude,
     });
     const accessToken = getAccessToken();
 
@@ -63,6 +66,7 @@ const EditTodo = ({
                 place: placeInput,
                 latitude: coordinates.latitude,
                 longitude: coordinates.longitude,
+                category: category,
             };
 
             console.log('editTodo:', editTodo);
@@ -79,7 +83,6 @@ const EditTodo = ({
             setDeadlineInput('');
             setPriorityInput('');
             setPlaceInput('');
-            setCoordinates({ latitude: 37.5050881, longitude: 126.9571012 });
 
             // 모달 닫기
             setEditTodoModalOpen(false);
@@ -143,6 +146,10 @@ const EditTodo = ({
                                 number={5}
                                 defaultNumber={priorityInput}
                             />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>카테고리</p>
+                            <CategoryBox>{category}</CategoryBox>
                         </InputLabel>
                         <InputLabel>
                             <p>장소</p>
@@ -237,6 +244,14 @@ const InputBox = styled.input`
     height: 2rem;
     padding: 0 0.5rem;
 `;
+
+const CategoryBox = styled.div`
+    display: flex;
+    background-color: #a9def9;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    justify-content: center;
+`
 
 const SubmitButton = styled.button`
     background-color: #0acf83;

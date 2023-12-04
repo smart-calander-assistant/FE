@@ -1,5 +1,6 @@
 .container {
-    height: 10rem;
+    height: 40rem !important;
+    width: 56rem !important;
 }
 
 .toastui-calendar-layout {
@@ -10,6 +11,22 @@
 .toastui-calendar-panel {
     width: 100%;
     height: 44px;
+}
+
+.toastui-calendar-panel.toastui-calendar-week-view-day-names {
+    overflow-y: hidden !important;
+    /* padding-left: 3rem !important; */
+}
+// 요일 길이
+.toastui-calendar-day-view .toastui-calendar-panel:not(.toastui-calendar-time),
+.toastui-calendar-week-view .toastui-calendar-panel:not(.toastui-calendar-time) {
+    overflow-y: scroll !important;
+    padding-left: 100rem !important;
+}
+
+// 시간표 길이
+.toastui-calendar-panel.toastui-calendar-time {
+    height: 30rem !important;
 }
 
 .toastui-calendar-day-name-container {
@@ -23,15 +40,24 @@
 }
 
 .toastui-calendar-holiday-sat {
-    color: rgb(51, 51, 51);
+    color: #3a86ff !important;
 }
 
 .toastui-calendar-holiday-sun {
-    color: rgb(255, 64, 64);
+    color: #ff486a !important;
+}
+
+[data-testid="dayName-week-mon"],
+[data-testid="dayName-week-tue"],
+[data-testid="dayName-week-wed"],
+[data-testid="dayName-week-thu"],
+[data-testid="dayName-week-fri"],
+.toastui-calendar-day-name-item.toastui-calendar-week {
+    color: black !important;
 }
 
 .toastui-calendar-timegrid {
-    width: 72px;
+    /* width: 3rem !important; */
 }
 
 .toastui-calendar-timegrid-time-column {

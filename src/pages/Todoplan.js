@@ -12,18 +12,22 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import AddTodo from '../mordal/AddTodo';
 import AddPlan from '../mordal/AddPlan';
 import Result from '../mordal/Result';
+import NewSchedule from '../mordal/NewSchedule';
 
 export default function Todoplan() {
     const [addTodoModalOpen, setAddTodoModalOpen] = useState(false);
     const [addPlanModalOpen, setAddPlanModalOpen] = useState(false);
     const [recommendModalOpen, setRecommendModalOpen] = useState(false);
-    const [resultModalOpen, setResultModalOpen] = useState(false);
+    const [newScheduleModalOpen, setNewScheduleModalOpen] = useState(false);
+    // const [resultModalOpen, setResultModalOpen] = useState(false);
     
     const [remainTodo, setRemainTodo] = useState([]);
     const [completedTodo, setCompletedTodo] = useState([]);
     const [remainPlan, setRemainPlan] = useState([]);
     const [showTodoList, setShowTodoList] = useState(true);
     const [changed, setChanged] = useState(false);
+    const [days, setDays] = useState(5);
+    const [categoryList, setCategoryList] = useState([]);
 
     const accessToken = getAccessToken();
 
@@ -80,12 +84,33 @@ export default function Todoplan() {
         fetchData();
     }, [accessToken, showTodoList, changed]);
 
-    const handleAddTodoModal = () => {
+    const handleAddTodoModal = async () => {
         setAddTodoModalOpen(true);
+        try {
+            const categoryList = await axios.get(`${requests.fetchCategory}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log("categoryList", categoryList);
+            setCategoryList(categoryList.data);
+        } catch (error) {
+            console.error('데이터 가져오기 오류:', error);
+        }
     };
 
-    const handleAddPlanModal = () => {
+    const handleAddPlanModal = async () => {
         setAddPlanModalOpen(true);
+        try {
+            const categoryList = await axios.get(`${requests.fetchCategory}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setCategoryList(categoryList.data);
+        } catch (error) {
+            console.error('데이터 가져오기 오류:', error);
+        }
     };
 
     const handleEditPlan = (planId) => {
@@ -185,10 +210,14 @@ export default function Todoplan() {
             {recommendModalOpen && (
                 <ScheduleRecommend
                     setRecommendModalOpen={setRecommendModalOpen}
-                    setResultModalOpen={setResultModalOpen}
+                    // setResultModalOpen={setResultModalOpen}
+                    setNewScheduleModalOpen={setNewScheduleModalOpen}
+                    setDays={setDays}
+                    days={days}
                 />
             )}
-            {resultModalOpen && (<Result setResultModalOpen={setResultModalOpen}/>)}
+            {/* {resultModalOpen && (<Result setResultModalOpen={setResultModalOpen} days={days}/>)} */}
+            {newScheduleModalOpen && (<NewSchedule setNewScheduleModalOpen={setNewScheduleModalOpen} days={days}/>)}
             <ContentWrapper active={showTodoList}>
                 {showTodoList
                     ? remainTodo
@@ -201,6 +230,9 @@ export default function Todoplan() {
                                   deadline={item.deadline}
                                   priority={item.priority}
                                   place={item.place}
+                                  latitude={item.latitude}
+                                  longitude={item.longitude}
+                                  category={item.category}
                                   isCompleted={item.complete}
                                   onEdit={handleEditTodo}
                                   onDelete={handleDeleteTodo}
@@ -216,12 +248,15 @@ export default function Todoplan() {
                               start_time={item.startTime}
                               end_time={item.endTime}
                               place={item.place}
+                              latitude={item.latitude}
+                              longitude={item.longitude}
+                              category={item.category}
                               onEdit={handleEditPlan}
                               onDelete={handleDeletePlan}
                               onChange={handleChange}
                           />
                       ))}
-                {!resultModalOpen && !recommendModalOpen &&
+                {!newScheduleModalOpen && !recommendModalOpen &&
                     <PlusIcon>
                         {showTodoList && (
                             <AiOutlinePlus
@@ -239,12 +274,14 @@ export default function Todoplan() {
                             <AddTodo
                                 setAddTodoModalOpen={setAddTodoModalOpen}
                                 onChange={handleChange}
+                                categoryList={categoryList}
                             />
                         )}
                         {addPlanModalOpen && (
                             <AddPlan
                                 setAddPlanModalOpen={setAddPlanModalOpen}
                                 onChange={handleChange}
+                                categoryList={categoryList}
                             />
                         )}
                     </PlusIcon>

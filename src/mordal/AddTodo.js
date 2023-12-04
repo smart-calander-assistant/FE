@@ -11,17 +11,20 @@ import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
+import SelectCategory from '../component/SelectCategory';
 
-const AddTodo = ({ setAddTodoModalOpen, onChange }) => {
+const AddTodo = ({ setAddTodoModalOpen, onChange, categoryList }) => {
     const [titleInput, setTitleInput] = useState('');
     const [priorityInput, setPriorityInput] = useState(3);
     const [deadlineInput, setDeadlineInput] = useState('');
     const [placeInput, setPlaceInput] = useState('');
-    const accessToken = getAccessToken();
+    const [categoryInput, setCategoryInput] = useState('');
     const [coordinates, setCoordinates] = useState({
         latitude: 0,
         longitude: 0,
     });
+
+    const accessToken = getAccessToken();
 
     const handlePlaceSelect = ({ place, coordinates }) => {
         setPlaceInput(place);
@@ -39,6 +42,16 @@ const AddTodo = ({ setAddTodoModalOpen, onChange }) => {
                 throw new Error('titleInput 또는 deadlineInput이 null입니다.');
             }
 
+            if (categoryInput === '') {
+                Swal.fire({
+                    icon: 'error',
+                    text: '카테고리를 입력해주세요',
+                });
+                throw new Error(
+                    'category값이 null입니다.'
+                );
+            }
+
             const formattedDeadline = format(deadlineInput, 'yyyy-MM-dd HH:mm');
 
             const newTodo = {
@@ -48,6 +61,7 @@ const AddTodo = ({ setAddTodoModalOpen, onChange }) => {
                 place: placeInput,
                 latitude: coordinates.latitude,
                 longitude: coordinates.longitude,
+                category: categoryInput,
             };
 
             console.log('newTodo:', newTodo);
@@ -87,6 +101,10 @@ const AddTodo = ({ setAddTodoModalOpen, onChange }) => {
         setPriorityInput(priority);
         console.log(`Selected number: ${priority}`);
     };
+
+    const handleCategory = (category) => {
+        setCategoryInput(category);
+    }
 
     return (
         <ViewContainer>
@@ -129,6 +147,10 @@ const AddTodo = ({ setAddTodoModalOpen, onChange }) => {
                                 number={5}
                                 defaultNumber={priorityInput}
                             />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>카테고리</p>
+                            <SelectCategory onChange={handleCategory} categoryList={categoryList}/>
                         </InputLabel>
                         <InputLabel>
                             <p>장소</p>

@@ -9,12 +9,16 @@ import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
+import SelectCategory from '../component/SelectCategory';
 
 const EditPlan = ({
     id,
     start_time,
     end_time,
     place,
+    latitude,
+    longitude,
+    category,
     title,
     setEditPlanModalOpen,
     onChange,
@@ -23,9 +27,10 @@ const EditPlan = ({
     const [startTimeInput, setStartTimeInput] = useState(new Date(start_time));
     const [endTimeInput, setEndTimeInput] = useState(new Date(end_time));
     const [placeInput, setPlaceInput] = useState(place);
+    const [categoryInput, setCategoryInput] = useState(category);
     const [coordinates, setCoordinates] = useState({
-        latitude: 0,
-        longitude: 0,
+        latitude: latitude,
+        longitude: longitude,
     });
     const accessToken = getAccessToken();
 
@@ -84,6 +89,7 @@ const EditPlan = ({
                 place: placeInput,
                 latitude: coordinates.latitude,
                 longitude: coordinates.longitude,
+                category: categoryInput,
             };
 
             console.log('editPlan:', editPlan);
@@ -163,6 +169,10 @@ const EditPlan = ({
                                 dateFormat='yyyy-MM-dd HH:mm'
                                 placeholderText={end_time}
                             />
+                        </InputLabel>
+                        <InputLabel>
+                            <p>카테고리</p>
+                            <CategoryBox>{categoryInput}</CategoryBox>
                         </InputLabel>
                         <InputLabel>
                             <p>장소</p>
@@ -257,6 +267,14 @@ const InputBox = styled.input`
     height: 2rem;
     padding: 0 0.5rem;
 `;
+
+const CategoryBox = styled.div`
+    display: flex;
+    background-color: #a9def9;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    justify-content: center;
+`
 
 const SubmitButton = styled.button`
     background-color: #0acf83;
