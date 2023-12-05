@@ -120,7 +120,7 @@ const TodoCard = ({
                 <BorderLine />
                 <TimeContainer>
                     <TypeBox>
-                    <p>{category}</p>
+                    <p>카테고리 : {category}</p>
                 </TypeBox>
                     {isCompleted && <p> </p>}
                     <TimeBox>

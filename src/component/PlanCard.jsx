@@ -104,7 +104,7 @@ const PlanCard = ({
                 <BorderLine />
                 <TimeContainer>
                     <TypeBox>
-                        <p>{category}</p>
+                        <p>카테고리 : {category}</p>
                     </TypeBox>
                     <TimeBox>
                         <p>

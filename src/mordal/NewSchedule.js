@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
-import Calendar from '@toast-ui/react-calendar';
 import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import { getAccessToken } from '../localstorage/auth';
 import axios from '../api/axios';
 import requests from './../api/requests';
 import styled from 'styled-components';
 import '../styles/Result.css';
-import CalendarLib from '../component/CalendarLib';
 import { useAppContext } from '../context/AppContext';
 import Swal from 'sweetalert2';
+import CalendarLib from '../component/CalendarLib';
 
 
 const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
     const [plans, setPlans] = useState([]);
     const [recommendPlans, setRecommendPlans] = useState([]);
     const [modifyPlans, setModifyPlans] = useState([]);
+    const [render, setRender] = useState(false);
     const [mySleepInfo, setMySleepInfo] = useState('');
     const { state, dispatch } = useAppContext();
 
@@ -37,7 +37,8 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
                 // const data = await recommended.json();
                 // dispatch({ type: 'SET_PLANS', payload: data });
 
-                setRecommendPlans(recommends.data.recommend);
+                setRecommendPlans(recommends.data);
+                setRender(true);
                 console.log("recommended 데이터", recommends);
 
                 const plan = await axios.get(`${requests.fetchPlan}/date/${days}`, {
@@ -58,7 +59,7 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
                     }
                 );
                 setMySleepInfo(parseInt(sleepInfo.data[0].endTime.split(":")[0], 10));
-                
+                console.log("sleepInfo", sleepInfo);
             } catch (error) {
                 console.error('fetching error', error);
             }
@@ -104,7 +105,8 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
                         />
                     </ModalTitle>
                     <InputList>
-                        <CalendarLib mySleepInfo={mySleepInfo} />
+                        {render && <CalendarLib mySleepInfo={mySleepInfo} scheduleData={recommendPlans} plans={plans}/>}
+                        {/* <ScheduleLib scheduleData={recommendPlans} days={days} sleepInfo={mySleepInfo}/> */}
                     </InputList>
                     <InputList>
                         <SubmitButton onClick={handleSubmit}>

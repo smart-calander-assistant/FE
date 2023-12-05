@@ -39,6 +39,15 @@ const SelectCategory = ({ onChange, categoryList }) => {
                 });
                 throw new Error('category값이 중복입니다.');
             }
+            
+            if (customCategory === '') {
+                Swal.fire({
+                    icon: 'error',
+                    text: '카테고리를 입력해주세요',
+                });
+                throw new Error('category값 없습니다.');
+            }
+
             const newCategory = { name: customCategory };
             await axios.post(requests.fetchCategory, newCategory, {
                 headers: {

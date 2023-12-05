@@ -39,9 +39,10 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, set
             // 입력값 초기화
             setStartTimeInput('');
 
-            // 모달 닫기
+            // 모달 열고 닫기
             setRecommendModalOpen(false);
-
+            setNewScheduleModalOpen(true);
+            
             let timerInterval;
             Swal.fire({
                 title: 'AI가 일정을 생성중입니다...',
@@ -67,7 +68,6 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, set
                     timer: 2000,
                 });
                 // setResultModalOpen(true);
-                setNewScheduleModalOpen(true);
                 if (result.dismiss === Swal.DismissReason.timer) {
                     console.log('I was closed by the timer');
                 }

@@ -11,7 +11,6 @@ import ScheduleRecommend from './../mordal/ScheduleRecommend';
 import { AiOutlinePlus } from 'react-icons/ai';
 import AddTodo from '../mordal/AddTodo';
 import AddPlan from '../mordal/AddPlan';
-import Result from '../mordal/Result';
 import NewSchedule from '../mordal/NewSchedule';
 
 export default function Todoplan() {

@@ -15,16 +15,16 @@
 
 .toastui-calendar-panel.toastui-calendar-week-view-day-names {
     overflow-y: hidden !important;
-    /* padding-left: 3rem !important; */
+
 }
-// 요일 길이
-.toastui-calendar-day-view .toastui-calendar-panel:not(.toastui-calendar-time),
+
+.toastui-calendar-day-view .toastui-calendar-panel:not(.toastui-calendar-time)
 .toastui-calendar-week-view .toastui-calendar-panel:not(.toastui-calendar-time) {
     overflow-y: scroll !important;
     padding-left: 100rem !important;
 }
 
-// 시간표 길이
+
 .toastui-calendar-panel.toastui-calendar-time {
     height: 30rem !important;
 }
