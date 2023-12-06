@@ -57,7 +57,7 @@
 }
 
 .toastui-calendar-timegrid {
-    /* width: 3rem !important; */
+    height: 200% !important;
 }
 
 .toastui-calendar-timegrid-time-column {

@@ -9,6 +9,7 @@ import '../styles/Result.css';
 import { useAppContext } from '../context/AppContext';
 import Swal from 'sweetalert2';
 import CalendarLib from '../component/CalendarLib';
+import { columnSelectionComplete } from '@syncfusion/ej2/grids';
 
 
 const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
@@ -73,9 +74,9 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
         // modifyPlans는 recommendPlans를 수정한 Plan값
         // 두값을 비교해서 차이점을 POST 해야함
 
-
+        console.log("post", recommendPlans);
         try {
-            await axios.post(`${requests.fetchRecommend}`, recommendPlans, {
+            await axios.post(`${requests.fetchRecommend}`, recommendPlans.recommend, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },

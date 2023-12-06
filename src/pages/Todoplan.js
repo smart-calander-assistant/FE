@@ -25,7 +25,7 @@ export default function Todoplan() {
     const [remainPlan, setRemainPlan] = useState([]);
     const [showTodoList, setShowTodoList] = useState(true);
     const [changed, setChanged] = useState(false);
-    const [days, setDays] = useState(5);
+    const [days, setDays] = useState(7);
     const [categoryList, setCategoryList] = useState([]);
 
     const accessToken = getAccessToken();

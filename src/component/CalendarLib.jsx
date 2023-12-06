@@ -8,10 +8,9 @@ import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import { getAccessToken } from '../localstorage/auth';
 import 'tui-calendar/dist/tui-calendar.css';
 
-
 // scheduleData.recommend : 추천된 일정
 // scheduleData.transform : 추천된 교통정보
-const CalendarLib = ({ mySleepInfo , scheduleData, plans }) => {
+const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
     const calendarRef = useRef(null);
     const [nextDay, setNextDay] = useState('');
     const accessToken = getAccessToken();
@@ -45,15 +44,32 @@ const CalendarLib = ({ mySleepInfo , scheduleData, plans }) => {
                 timezonesCollapsed: false, // sub타임존 설정시 추가설정
                 hourStart: mySleepInfo, // 시작시간
                 hourEnd: 24, // 종료시간
-                collapseDuplicateEvents: false, // 중복일정
+                collapseDuplicateEvents: true, // 중복일정
             },
             taskView: false, // taskView 비활성화 (선택적)
             scheduleView: ['time'], // scheduleView 설정 (선택적)
+            template: {
+                time(schedule) {
+                    const startTime = new Date(schedule.start).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: false,
+                      });
+                      const endTime = new Date(schedule.end).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: false,
+                      });
+                    return `${startTime} - ${endTime}<br/>${
+                        schedule.title
+                    }<p></p><br/>장소: ${schedule.location || '미입력'}`;
+                },
+            },
         });
 
         // 특정 날짜로 이동
         calendarInstance.setDate(startDate);
-    }, [scheduleData, mySleepInfo]);
+    }, [scheduleData, mySleepInfo, plans]);
 
     const initialEvents = [].concat(
         plans.map((plan) => ({
@@ -63,9 +79,8 @@ const CalendarLib = ({ mySleepInfo , scheduleData, plans }) => {
             end: plan.endTime,
             location: plan.place,
             color: 'black',
-            backgroundColor: 'green',
-            dragBackgroundColor: 'red',
-            borderColor: 'black',
+            backgroundColor: '#a9def9',
+            borderColor: '#3a86ff',
             category: 'time',
             isReadOnly: true,
         })),
@@ -76,13 +91,12 @@ const CalendarLib = ({ mySleepInfo , scheduleData, plans }) => {
             end: plan.endTime,
             location: plan.place,
             color: 'black',
-            backgroundColor: 'green',
+            backgroundColor: '#f1a1b0',
             dragBackgroundColor: 'red',
-            borderColor: 'black',
+            borderColor: '#ff486a',
             category: 'time',
-            isReadOnly: true,
-        })),
-
+            isReadOnly: false,
+        }))
     );
 
     return (
