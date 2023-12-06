@@ -211,7 +211,7 @@ export default function Setting() {
                 } catch (error) {
                     console.error('초기화 중 오류 발생: ', error);
                 }
-                Swal.fire('기록초기화 완료', 'success');
+                Swal.fire({ title: '일정초기화 완료', icon: 'success' });
             }
         });
     };

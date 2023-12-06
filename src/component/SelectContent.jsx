@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const SelectContent = ({ onChange, day }) => {
-    const numbers = Array.from({ length: 2 }, (_, index) => 7 * (index + 1)); // 3부터 14까지의 숫자 생성
+    const numbers = Array.from({ length: 5 }, (_, index) => index + 3); // 3부터 7까지의 숫자 생성
 
     return (
         <SelectBox onChange={(e) => onChange(e.target.value)} value={day}>

@@ -27,7 +27,6 @@ const SelectCategory = ({ onChange, categoryList }) => {
     const handleCustomInputChange = (e) => {
         const inputCategory = e.target.value;
         setCustomCategory(inputCategory);
-        onChange(inputCategory);
     };
 
     const handleSubmit = async () => {
@@ -61,7 +60,7 @@ const SelectCategory = ({ onChange, categoryList }) => {
                 showConfirmButton: false,
                 timer: 1000,
             });
-
+            onChange(customCategory);
             setChange(true);
         } catch (error) {
             console.error('Category 설정 문제: ', error);

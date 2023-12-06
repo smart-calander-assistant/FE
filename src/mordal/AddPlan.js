@@ -47,7 +47,7 @@ const AddPlan = ({ setAddPlanModalOpen, onChange, categoryList }) => {
             if (categoryInput === '') {
                 Swal.fire({
                     icon: 'error',
-                    text: '카테고리를 입력해주세요',
+                    text: '카테고리를 입력 혹은 추가해주세요',
                 });
                 throw new Error(
                     'category값이 null입니다.'

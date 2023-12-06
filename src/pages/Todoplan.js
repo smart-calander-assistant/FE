@@ -205,7 +205,7 @@ export default function Todoplan() {
                     Planned List
                 </TypeBox>
             </TodoPlanContainer>
-            <SubmitButton onClick={handleClick}>AI일정 추천</SubmitButton>
+            <SubmitButton onClick={handleClick}>일정 추천</SubmitButton>
             {recommendModalOpen && (
                 <ScheduleRecommend
                     setRecommendModalOpen={setRecommendModalOpen}

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { IoCalendarClearOutline } from 'react-icons/io5';
 
 const ScheduleContent = ({ title, place, start_time, end_time, margin }) => {
     const startTime = start_time.split(':').map(Number);
@@ -24,8 +25,13 @@ const ScheduleContent = ({ title, place, start_time, end_time, margin }) => {
                 <TimeSlot>{end_time}</TimeSlot>
             </TimeContainer>
             <ScheduleContainer>
-                <TitleBox>{title}</TitleBox>
-                <PlaceBox>{place}</PlaceBox>
+                <IconContainer>
+                    <IoCalendarClearOutline size={'2rem'} />
+                </IconContainer>
+                <TextContainer>
+                    <TitleBox>{title}</TitleBox>
+                    <PlaceBox>{place}</PlaceBox>
+                </TextContainer>
             </ScheduleContainer>
         </RootContainer>
     );
@@ -43,14 +49,12 @@ const RootContainer = styled.div`
 const ScheduleContainer = styled.div`
     display: flex;
     flex: 1;
-    flex-direction: column;
     background-color: #de496e;
     color: white;
     margin: 0 1rem;
     padding: 1rem;
     border-radius: 1rem;
     gap: 1rem;
-    justify-content: space-between;
 `;
 
 const TimeContainer = styled.div`
@@ -71,5 +75,21 @@ const TitleBox = styled.p`
 
 const PlaceBox = styled.div`
     display: flex;
-    justify-content: end;
+`;
+
+const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: space-between;
+`
+
+const IconContainer = styled.div`
+    display: flex;
+    padding: 0.5rem;
+    margin: 0 0.5rem 0 0    ;
+    background-color: #f9b0d7;
+    border-radius: 1rem;
+    align-items: center;
+    color: black;
 `;
