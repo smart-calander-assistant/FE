@@ -32,8 +32,8 @@ export default function MyInfo({
     const [badEnd, setBadEnd] = useState(new Date(bad_end));
     const [placeInput, setPlaceInput] = useState(home.place);
     const [coordinates, setCoordinates] = useState({
-        latitude: 0,
-        longitude: 0,
+        latitude: home.latitude,
+        longitude: home.longitude,
     });
 
     const handlePlaceSelect = ({ place, coordinates }) => {

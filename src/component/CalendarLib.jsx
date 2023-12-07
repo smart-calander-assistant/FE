@@ -21,13 +21,23 @@ function formatEpochTime(epochTime) {
     return formattedTime;
 }
 
+function formatTZDate(tzDate) {
+    const year = tzDate.getFullYear();
+    const month = String(tzDate.getMonth() + 1).padStart(2, '0');
+    const day = String(tzDate.getDate()).padStart(2, '0');
+    const hours = String(tzDate.getHours()).padStart(2, '0');
+    const minutes = String(tzDate.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
 const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
     const calendarRef = useRef(null);
     const [nextDay, setNextDay] = useState('');
     const [originRecommend, setOriginRecommend] = useState(
         scheduleData.recommend
     );
-    const [selectedPlan, setSelectedPlan] = useState(null);
+    const [changedSchedule, setChangedSchedule] = useState(scheduleData.recommend);
     const accessToken = getAccessToken();
 
     useEffect(() => {
@@ -59,7 +69,7 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
                 timezonesCollapsed: false, // sub타임존 설정시 추가설정
                 hourStart: mySleepInfo, // 시작시간
                 hourEnd: 24, // 종료시간
-                collapseDuplicateEvents: true, // 중복일정
+                collapseDuplicateEvents: false, // 중복일정
             },
             taskView: false, // taskView 비활성화 (선택적)
             scheduleView: ['time'], // scheduleView 설정 (선택적)
@@ -91,55 +101,55 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
 
         // 특정 날짜로 이동
         calendarInstance.setDate(startDate);
-    }, [scheduleData, mySleepInfo, plans]);
+    }, [scheduleData, mySleepInfo, plans, changedSchedule]);
 
     useEffect(() => {
-        const handleBeforeUpdateSchedule = (event) => {
-            const { schedule, start, end } = event;
-            console.log(
-                'Schedule moved:',
-                schedule.id,
-                'New Start:',
-                start,
-                'New End:',
-                end
-            );
+        const handleBeforeUpdateEvent = (eventInfo) => {
+            const { event, changes } = eventInfo;
 
-            // 여기서 서버에 업데이트 요청 등을 할 수 있음
-        };
+            // 여기서 수정된 정보 확인
+            console.log('Updated event:', event);
+            console.log('Changes:', changes);
 
-        const handleBeforeUpdateEvent = (event) => {
-            const { schedule } = event;
+            const updatedScheduleData = scheduleData.recommend.map((plan) => {
+                if (plan.id === event.id) {
+                    // 수정된 startTime과 endTime 가져오기
+                    const updatedStartTime = formatTZDate(changes.start);
+                    const updatedEndTime = formatTZDate(changes.end);
 
-            // 클릭된 스케쥴의 정보를 상태에 저장
-            setSelectedPlan(schedule);
+                    // 수정된 속성만 업데이트
+                    return {
+                        ...plan,
+                        startTime: updatedStartTime,
+                        endTime: updatedEndTime,
+                    };
+                }
+                return plan;
+            });
+            console.log("updated", updatedScheduleData);
 
-            // 여기서 수정 창을 띄울 수 있음
-            // 예: 모달을 열거나 다른 방식으로 수정 창을 띄우세요
+            // 업데이트된 scheduleData를 state로 설정
+            setChangedSchedule(updatedScheduleData);
+
+            // 여기서 수정된 정보를 활용하여 업데이트 등을 수행할 수 있음
+            // 예: 서버에 수정된 정보를 전송하고, 상태를 업데이트하는 등의 작업
+            // axios.post('/api/updateEvent', { eventId: event.id, changes })
+            //     .then(response => {
+            //         console.log('Event updated successfully:', response.data);
+            //     })
+            //     .catch(error => {
+            //         console.error('Error updating event:', error);
+            //     });
         };
 
         const calendarInstance = calendarRef.current.getInstance();
 
-        // 이전에 등록된 이벤트 핸들러들 제거
-        calendarInstance.off(
-            'beforeUpdateSchedule',
-            handleBeforeUpdateSchedule
-        );
+        // 이전에 등록된 이벤트 핸들러 제거
         calendarInstance.off('beforeUpdateEvent', handleBeforeUpdateEvent);
 
-        // 새로운 이벤트 핸들러들 등록
-        calendarInstance.on('beforeUpdateSchedule', handleBeforeUpdateSchedule);
+        // 새로운 이벤트 핸들러 등록
         calendarInstance.on('beforeUpdateEvent', handleBeforeUpdateEvent);
     }, [scheduleData, mySleepInfo, plans]);
-
-    // 클릭된 스케쥴의 정보를 수정 창에서 수정한 후, 해당 정보로 업데이트
-    const handlePlanUpdate = (updatedPlan) => {
-        // 여기서 서버에 업데이트 요청 등을 할 수 있음
-        console.log('Updated plan:', updatedPlan);
-
-        // 예시: 업데이트된 정보로 상태를 업데이트
-        setSelectedPlan(null); // 수정이 끝났으니 선택된 스케쥴 초기화
-    };
 
     const initialEvents = [].concat(
         plans.map((plan) => ({
@@ -154,7 +164,7 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
             category: 'time',
             isReadOnly: true,
         })),
-        scheduleData.recommend.map((plan) => ({
+        changedSchedule.map((plan) => ({
             id: plan.id,
             title: plan.content,
             start: plan.startTime,
@@ -192,7 +202,7 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
             ref={calendarRef}
             usageStatistics={false}
             view={'week'}
-            useDetailPopup={true}
+            useDetailPopup={false}
             // isReadOnly={true}
             gridSelection={{
                 enableClick: false,

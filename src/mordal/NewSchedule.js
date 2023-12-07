@@ -97,7 +97,7 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
             <RootContainer>
                 <ModalContainer>
                     <ModalTitle>
-                        <ModalDetail>AI일정 생성 결과</ModalDetail>
+                        <ModalDetail>일정 생성 결과</ModalDetail>
                         <IoClose
                             size={'2rem'}
                             onClick={() => setNewScheduleModalOpen(false)}

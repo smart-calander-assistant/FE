@@ -45,9 +45,9 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, set
             
             let timerInterval;
             Swal.fire({
-                title: 'AI가 일정을 생성중입니다...',
+                title: '일정을 생성중입니다...',
                 html: '<b></b>ns만큼 기다려주세요',
-                timer: 5000,
+                timer: 7000,
                 timerProgressBar: true,
                 didOpen: () => {
                     Swal.showLoading();

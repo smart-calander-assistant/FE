@@ -32,7 +32,7 @@ export default function Register({ setRegisterModalOpen }) {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                text: '이미 가입된 이메일입니다. 다른 이메일을 사용해주세요',
+                text: '이미 가입된 아이디입니다. 다른 아이디를 사용해주세요',
             });
             console.error('회원가입 오류:', error);
         }
@@ -51,12 +51,12 @@ export default function Register({ setRegisterModalOpen }) {
                     </ModalTitle>
                     <InputList>
                         <InputLabel>
-                            <p>이메일</p>
+                            <p>아이디</p>
                             <InputBox
                                 type='email'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder='이메일을 입력해주세요'
+                                placeholder='아이디를 입력해주세요'
                             />
                         </InputLabel>
                         <InputBox
