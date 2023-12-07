@@ -59,12 +59,15 @@ export default function Register({ setRegisterModalOpen }) {
                                 placeholder='아이디를 입력해주세요'
                             />
                         </InputLabel>
-                        <InputBox
-                            type='password'
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder='비밀번호를 입력해주세요'
-                        />
+                        <InputLabel>
+                            <p>비밀번호</p>
+                            <InputBox
+                                type='password'
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder='비밀번호를 입력해주세요'
+                            />
+                        </InputLabel>
                         <SubmitButton onClick={handleRegister}>
                             회원가입
                         </SubmitButton>

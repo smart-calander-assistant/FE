@@ -41,11 +41,8 @@ export default ScheduleContent;
 
 const RootContainer = styled.div`
     display: flex;
-    /* width: 100%; */
-    /* height: ${(props) => props.height / 30}rem; */
-    margin-bottom: ${(props) => props.margin / 60}rem;
+    margin-bottom: ${(props) => Math.max(props.margin / 60, 0.1)}rem;
 `;
-
 const ScheduleContainer = styled.div`
     display: flex;
     flex: 1;

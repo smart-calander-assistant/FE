@@ -15,8 +15,8 @@ import Weight from '../mordal/Weight';
 export default function Setting() {
     const [myTodoCount, setMyTodoCount] = useState(0);
     const [myTodoFinishCount, setMyTodoFinishCount] = useState(0);
+    const [myRecommendCount, setMyRecommendCount] = useState(0);
     const [myTodoSuccessRate, setMyTodoSuccessRate] = useState(0);
-    const recommended = 7;
     const [myInfoModalOpen, setMyInfoModalOpen] = useState(false);
     const [weightModalOpen, setWeightModalOpen] = useState(false);
     const [mySleepInfo, setMySleepInfo] = useState('');
@@ -60,9 +60,20 @@ export default function Setting() {
                         },
                     }
                 );
+                
+                
+                const myRecommendCount = await axios.get(
+                    `${requests.fetchMember}/count`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
+                        },
+                    }
+                );
 
                 setMyTodoCount(myCount.data);
                 setMyTodoFinishCount(myFinishCount.data);
+                setMyRecommendCount(myRecommendCount.data)
 
                 if (myFinishCount.data === 0) {
                     setMyTodoSuccessRate(0);
@@ -251,7 +262,7 @@ export default function Setting() {
                     />
                     <RecordContent
                         title={'정교한 일정 설정'}
-                        content={`Ai가 추천한 일정을 ${recommended}번을 선택했어요`}
+                        content={`Ai가 추천한 일정을 ${myRecommendCount}번을 선택했어요`}
                         type={'achievement'}
                     />
                 </RecordContainer>
