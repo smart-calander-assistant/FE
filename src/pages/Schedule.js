@@ -26,7 +26,6 @@ export default function Schedule() {
     const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
     const [datePlan, setDatePlan] = useState([]);
     const [transmitInfo, setTransmitInfo] = useState([]);
-    const [combinedSchedule, setCombinedSchedule] = useState([]);
     const [changed, setChanged] = useState(false);
 
     var null_cnt = 0;
@@ -63,8 +62,6 @@ export default function Schedule() {
             setTransmitInfo(dailySchedule.data);
             setSelectedDay(date.date);
 
-            const combinedArray = dailyPlan.data.concat(dailySchedule);
-            setCombinedSchedule(combinedArray);
             console.log('교통정보', dailySchedule);
             console.log('plan정보', dailyPlan);
         } catch (error) {

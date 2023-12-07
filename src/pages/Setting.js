@@ -134,10 +134,6 @@ export default function Setting() {
             setMyFocusInfo(myFocusInfo.data[0]);
             setMyNotFocusInfo(myNotFocusInfo.data[0]);
             setMyPlaceInfo(myPlaceInfo.data);
-            console.log('a', mySleepInfo);
-            console.log('b', myFocusInfo);
-            console.log('c', myNotFocusInfo);
-            console.log('place', myPlaceInfo.data);
         } catch (error) {
             console.error('내 정보 확인 중 오류 발생: ', error);
         }
@@ -264,14 +260,12 @@ export default function Setting() {
                     }
                     onClick={handleWeight}
                 />
-                {weightModalOpen &&
-                    (console.log(myWeightInfo),
-                    (
-                        <Weight
-                            setWeightModalOpen={setWeightModalOpen}
-                            myWeight={myWeightInfo.data}
-                        />
-                    ))}
+                {weightModalOpen && (
+                    <Weight
+                        setWeightModalOpen={setWeightModalOpen}
+                        myWeight={myWeightInfo.data}
+                    />
+                )}
                 <ExplainContent
                     title={'일정 기록 초기화'}
                     content={'일정 기록 현황을 전부 초기화할 수 있습니다!!'}

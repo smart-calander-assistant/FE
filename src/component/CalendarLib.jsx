@@ -8,11 +8,26 @@ import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import { getAccessToken } from '../localstorage/auth';
 import 'tui-calendar/dist/tui-calendar.css';
 
-// scheduleData.recommend : 추천된 일정
-// scheduleData.transform : 추천된 교통정보
+function formatEpochTime(epochTime) {
+    const date = new Date(epochTime * 1000);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+
+    return formattedTime;
+}
+
 const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
     const calendarRef = useRef(null);
     const [nextDay, setNextDay] = useState('');
+    const [originRecommend, setOriginRecommend] = useState(
+        scheduleData.recommend
+    );
+    const [selectedPlan, setSelectedPlan] = useState(null);
     const accessToken = getAccessToken();
 
     useEffect(() => {
@@ -50,19 +65,26 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
             scheduleView: ['time'], // scheduleView 설정 (선택적)
             template: {
                 time(schedule) {
-                    const startTime = new Date(schedule.start).toLocaleTimeString('en-US', {
+                    const startTime = new Date(
+                        schedule.start
+                    ).toLocaleTimeString('en-US', {
                         hour: 'numeric',
                         minute: 'numeric',
                         hour12: false,
-                      });
-                      const endTime = new Date(schedule.end).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: false,
-                      });
+                    });
+                    const endTime = new Date(schedule.end).toLocaleTimeString(
+                        'en-US',
+                        {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: false,
+                        }
+                    );
                     return `${startTime} - ${endTime}<br/>${
                         schedule.title
-                    }<p></p><br/>장소: ${schedule.location || '미입력'}`;
+                    }<p></p><br/>${
+                        schedule.location ? `장소: ${schedule.location}` : ''
+                    }`;
                 },
             },
         });
@@ -70,6 +92,54 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
         // 특정 날짜로 이동
         calendarInstance.setDate(startDate);
     }, [scheduleData, mySleepInfo, plans]);
+
+    useEffect(() => {
+        const handleBeforeUpdateSchedule = (event) => {
+            const { schedule, start, end } = event;
+            console.log(
+                'Schedule moved:',
+                schedule.id,
+                'New Start:',
+                start,
+                'New End:',
+                end
+            );
+
+            // 여기서 서버에 업데이트 요청 등을 할 수 있음
+        };
+
+        const handleBeforeUpdateEvent = (event) => {
+            const { schedule } = event;
+
+            // 클릭된 스케쥴의 정보를 상태에 저장
+            setSelectedPlan(schedule);
+
+            // 여기서 수정 창을 띄울 수 있음
+            // 예: 모달을 열거나 다른 방식으로 수정 창을 띄우세요
+        };
+
+        const calendarInstance = calendarRef.current.getInstance();
+
+        // 이전에 등록된 이벤트 핸들러들 제거
+        calendarInstance.off(
+            'beforeUpdateSchedule',
+            handleBeforeUpdateSchedule
+        );
+        calendarInstance.off('beforeUpdateEvent', handleBeforeUpdateEvent);
+
+        // 새로운 이벤트 핸들러들 등록
+        calendarInstance.on('beforeUpdateSchedule', handleBeforeUpdateSchedule);
+        calendarInstance.on('beforeUpdateEvent', handleBeforeUpdateEvent);
+    }, [scheduleData, mySleepInfo, plans]);
+
+    // 클릭된 스케쥴의 정보를 수정 창에서 수정한 후, 해당 정보로 업데이트
+    const handlePlanUpdate = (updatedPlan) => {
+        // 여기서 서버에 업데이트 요청 등을 할 수 있음
+        console.log('Updated plan:', updatedPlan);
+
+        // 예시: 업데이트된 정보로 상태를 업데이트
+        setSelectedPlan(null); // 수정이 끝났으니 선택된 스케쥴 초기화
+    };
 
     const initialEvents = [].concat(
         plans.map((plan) => ({
@@ -96,7 +166,25 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
             borderColor: '#ff486a',
             category: 'time',
             isReadOnly: false,
-        }))
+        })),
+        scheduleData.transport
+            .map((dayPlans) =>
+                dayPlans
+                    .filter((plan) => plan !== null)
+                    .map((plan) => ({
+                        id: plan.id,
+                        title: '교통정보',
+                        start: formatEpochTime(plan.departure_time),
+                        end: formatEpochTime(plan.arrival_time),
+                        location: '',
+                        color: 'black',
+                        backgroundColor: '#eee1bd',
+                        borderColor: '#ffbe0b',
+                        category: 'time',
+                        isReadOnly: true,
+                    }))
+            )
+            .flat()
     );
 
     return (
@@ -105,7 +193,7 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
             usageStatistics={false}
             view={'week'}
             useDetailPopup={true}
-            isReadOnly={true}
+            // isReadOnly={true}
             gridSelection={{
                 enableClick: false,
                 enableDblClick: false,

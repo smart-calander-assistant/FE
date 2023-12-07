@@ -75,13 +75,15 @@ const TitleBox = styled.p`
 
 const PlaceBox = styled.div`
     display: flex;
+    justify-content: flex-end;
 `;
 
 const TextContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    justify-content: space-between;
+    gap: 0.5rem;
+    flex: 1;
+    /* justify-content: space-between; */
 `
 
 const IconContainer = styled.div`
