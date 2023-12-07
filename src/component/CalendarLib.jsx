@@ -31,15 +31,19 @@ function formatTZDate(tzDate) {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
+const CalendarLib = ({
+    mySleepInfo,
+    scheduleData,
+    plans,
+    onScheduleChange,
+}) => {
     const calendarRef = useRef(null);
     const [nextDay, setNextDay] = useState('');
-    const [originRecommend, setOriginRecommend] = useState(
+    const [changedSchedule, setChangedSchedule] = useState(
         scheduleData.recommend
     );
-    const [changedSchedule, setChangedSchedule] = useState(scheduleData.recommend);
     const accessToken = getAccessToken();
-
+    
     useEffect(() => {
         const getCurrentDay = async () => {
             const currentDate = new Date();
@@ -101,7 +105,7 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
 
         // 특정 날짜로 이동
         calendarInstance.setDate(startDate);
-    }, [scheduleData, mySleepInfo, plans, changedSchedule]);
+    }, [scheduleData, mySleepInfo, plans]);
 
     useEffect(() => {
         const handleBeforeUpdateEvent = (eventInfo) => {
@@ -111,7 +115,7 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
             console.log('Updated event:', event);
             console.log('Changes:', changes);
 
-            const updatedScheduleData = scheduleData.recommend.map((plan) => {
+            const updatedScheduleData = changedSchedule.map((plan) => {
                 if (plan.id === event.id) {
                     // 수정된 startTime과 endTime 가져오기
                     const updatedStartTime = formatTZDate(changes.start);
@@ -126,10 +130,11 @@ const CalendarLib = ({ mySleepInfo, scheduleData, plans }) => {
                 }
                 return plan;
             });
-            console.log("updated", updatedScheduleData);
+            console.log('updated', updatedScheduleData);
 
             // 업데이트된 scheduleData를 state로 설정
             setChangedSchedule(updatedScheduleData);
+            onScheduleChange(updatedScheduleData);
 
             // 여기서 수정된 정보를 활용하여 업데이트 등을 수행할 수 있음
             // 예: 서버에 수정된 정보를 전송하고, 상태를 업데이트하는 등의 작업

@@ -23,6 +23,13 @@ export default function Setting() {
     const [myFocusInfo, setMyFocusInfo] = useState('');
     const [myNotFocusInfo, setMyNotFocusInfo] = useState('');
     const [myWeightInfo, setMyWeightInfo] = useState('');
+    const [realWeightInfo, setRealWeightInfo] = useState({
+        DEADLINE: 0.0,
+        NOT_FOCUS_TIME: 0.0,
+        PRIORITY: 0.0,
+        DISTANCE: 0.0,
+        FOCUS_TIME: 0.0,
+    });
     const [myPlaceInfo, setMyPlaceInfo] = useState('');
 
     const navigate = useNavigate();
@@ -181,6 +188,21 @@ export default function Setting() {
                 },
             });
             setMyWeightInfo(myWeight);
+
+            const realWeight = await axios.get(`${requests.fetchWeight}/weight`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setRealWeightInfo({
+                DEADLINE: realWeight.data.DEADLINE,
+                NOT_FOCUS_TIME: realWeight.data.NOT_FOCUS_TIME,
+                PRIORITY: realWeight.data.PRIORITY,
+                DISTANCE: realWeight.data.DISTANCE,
+                FOCUS_TIME: realWeight.data.FOCUS_TIME,
+            });
+            console.log("weight");
+            console.log(realWeight);
         } catch (error) {
             console.error('가중치확인 중 오류 발생: ', error);
         }
@@ -264,6 +286,7 @@ export default function Setting() {
                     <Weight
                         setWeightModalOpen={setWeightModalOpen}
                         myWeight={myWeightInfo.data}
+                        realWeight={realWeightInfo}
                     />
                 )}
                 <ExplainContent

@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { getAccessToken } from '../localstorage/auth';
 import NumberSelector from '../component/NumberSelector';
 
-export default function Weight({ setWeightModalOpen, myWeight }) {
+export default function Weight({ setWeightModalOpen, myWeight, realWeight }) {
     const [deadlineRank, setDeadlineRank] = useState(myWeight.DEADLINE);
     const [priorityRank, setPriorityRank] = useState(myWeight.PRIORITY);
     const [distanceRank, setDistanceRank] = useState(myWeight.DISTANCE);
@@ -102,7 +102,7 @@ export default function Weight({ setWeightModalOpen, myWeight }) {
             <RootContainer>
                 <ModalContainer>
                     <ModalTitle>
-                        <ModalDetail>AI추천 우선순위 설정</ModalDetail>
+                        <ModalDetail>추천 우선순위 설정</ModalDetail>
                         <IoClose
                             size={'2rem'}
                             onClick={() => setWeightModalOpen(false)}
@@ -110,7 +110,10 @@ export default function Weight({ setWeightModalOpen, myWeight }) {
                     </ModalTitle>
                     <InputList>
                         <InputLabel>
-                            <p>마감기한</p>
+                            <WeightContainer>
+                                <p>마감기한</p>
+                                <WeightBox>{realWeight.DEADLINE}</WeightBox>
+                            </WeightContainer>
                             <NumberSelector
                                 onSelect={(rank) =>
                                     handleNumberSelect(setDeadlineRank, rank)
@@ -120,7 +123,10 @@ export default function Weight({ setWeightModalOpen, myWeight }) {
                             />
                         </InputLabel>
                         <InputLabel>
-                            <p>중요도</p>
+                            <WeightContainer>
+                                <p>중요도</p>
+                                <WeightBox>{realWeight.PRIORITY}</WeightBox>
+                            </WeightContainer>
                             <NumberSelector
                                 onSelect={(rank) =>
                                     handleNumberSelect(setPriorityRank, rank)
@@ -130,7 +136,10 @@ export default function Weight({ setWeightModalOpen, myWeight }) {
                             />
                         </InputLabel>
                         <InputLabel>
-                            <p>일정 간의 이동시간</p>
+                            <WeightContainer>
+                                <p>일정 간의 이동시간</p>
+                                <WeightBox>{realWeight.DISTANCE}</WeightBox>
+                            </WeightContainer>
                             <NumberSelector
                                 onSelect={(rank) =>
                                     handleNumberSelect(setDistanceRank, rank)
@@ -140,7 +149,10 @@ export default function Weight({ setWeightModalOpen, myWeight }) {
                             />
                         </InputLabel>
                         <InputLabel>
-                            <p>집중 잘되는 시간</p>
+                            <WeightContainer>
+                                <p>집중 잘되는 시간</p>
+                                <WeightBox>{realWeight.FOCUS_TIME}</WeightBox>
+                            </WeightContainer>
                             <NumberSelector
                                 onSelect={(rank) =>
                                     handleNumberSelect(setFocusTimeRank, rank)
@@ -150,7 +162,12 @@ export default function Weight({ setWeightModalOpen, myWeight }) {
                             />
                         </InputLabel>
                         <InputLabel>
-                            <p>집중 안되는 시간</p>
+                            <WeightContainer>
+                                <p>집중 안되는 시간</p>
+                                <WeightBox>
+                                    {realWeight.NOT_FOCUS_TIME}
+                                </WeightBox>
+                            </WeightContainer>
                             <NumberSelector
                                 onSelect={(rank) =>
                                     handleNumberSelect(
@@ -238,6 +255,23 @@ const InputLabel = styled.div`
     font-size: medium;
     margin: 0.5rem 0;
     gap: 0.5rem;
+`;
+
+const WeightContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const WeightBox = styled.div`
+    display: flex;
+    padding: 0.5rem;
+    margin-right: 1rem;
+    border-radius: 0.5rem;
+    justify-content: center;
+    background-color: #a9def9;
+
+    width: 2.5rem;
 `;
 
 const SubmitButton = styled.button`

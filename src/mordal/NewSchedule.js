@@ -6,17 +6,16 @@ import axios from '../api/axios';
 import requests from './../api/requests';
 import styled from 'styled-components';
 import '../styles/Result.css';
-import { useAppContext } from '../context/AppContext';
 import Swal from 'sweetalert2';
 import CalendarLib from '../component/CalendarLib';
 
 const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
     const [plans, setPlans] = useState([]);
     const [recommendPlans, setRecommendPlans] = useState([]);
+    const [recommendPriority, setRecommendPriority] = useState([]);
     const [modifyPlans, setModifyPlans] = useState([]);
     const [render, setRender] = useState(false);
     const [mySleepInfo, setMySleepInfo] = useState('');
-    const { state, dispatch } = useAppContext();
 
     const accessToken = getAccessToken();
 
@@ -33,10 +32,9 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                // const data = await recommended.json();
-                // dispatch({ type: 'SET_PLANS', payload: data });
 
                 setRecommendPlans(recommends.data);
+                setRecommendPriority(recommends.data.priority);
                 setRender(true);
                 console.log("recommended 데이터", recommends);
 
@@ -64,7 +62,7 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
             }
         };
         fetchData();
-    }, [days, dispatch]);
+    }, []);
 
     const handleSubmit = async () => {
         // 내용 무수히 추가
@@ -72,9 +70,68 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
         // modifyPlans는 recommendPlans를 수정한 Plan값
         // 두값을 비교해서 차이점을 POST 해야함
 
-        console.log("post", recommendPlans);
+        const realWeight = await axios.get(`${requests.fetchWeight}/weight`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        let realWeightInfo = ({
+            DEADLINE: realWeight.data.DEADLINE,
+            NOT_FOCUS_TIME: realWeight.data.NOT_FOCUS_TIME,
+            PRIORITY: realWeight.data.PRIORITY,
+            DISTANCE: realWeight.data.DISTANCE,
+            FOCUS_TIME: realWeight.data.FOCUS_TIME,
+        });
+
+        for (const modifiedPlan of modifyPlans) {
+            const matchingRecommend = recommendPlans.recommend.find(plan => plan.id === modifiedPlan.id);
+            if (matchingRecommend && (matchingRecommend.startTime !== modifiedPlan.startTime || matchingRecommend.endTime !== modifiedPlan.endTime)) {
+                const original = findMatchingDictionary(matchingRecommend.startTime, matchingRecommend.endTime);
+                const modified = findMatchingDictionary(modifiedPlan.startTime, modifiedPlan.endTime);
+
+                console.log('Original:', original);
+                console.log('Modified:', modified);
+
+                let deadline = realWeightInfo.DEADLINE;
+                let distance = realWeightInfo.DISTANCE;
+                let focusTime = realWeightInfo.FOCUS_TIME;
+                let notFocusTime = realWeightInfo.NOT_FOCUS_TIME;
+                let priority = realWeightInfo.PRIORITY;
+
+                if (original.DEADLINE < modified.DEADLINE) {deadline += 0.01};
+                if (original.DISTANCE < modified.DISTANCE) {distance += 0.01};
+                if (original.FOCUS_TIME < modified.FOCUS_TIME) {focusTime += 0.01};
+                if (original.NOT_FOCUS_TIME < modified.NOT_FOCUS_TIME) {notFocusTime += 0.01};
+                if (original.PRIORITY < modified.PRIORITY) {priority += 0.01};
+
+                // 합이 1로 맞게 세팅
+                let deadline_temp = (deadline / (deadline + distance + focusTime + notFocusTime + priority)).toFixed(3);
+                let distance_temp = (distance / (deadline + distance + focusTime + notFocusTime + priority)).toFixed(3);
+                let focusTime_temp = (focusTime / (deadline + distance + focusTime + notFocusTime + priority)).toFixed(3);
+                let notFocusTime_temp = (notFocusTime / (deadline + distance + focusTime + notFocusTime + priority)).toFixed(3);
+                let priority_temp = (priority / (deadline + distance + focusTime + notFocusTime + priority)).toFixed(3);
+                
+                console.log('수정가중치', deadline_temp, distance_temp, focusTime_temp, notFocusTime_temp, priority_temp);
+
+                const modifiedWeight = {
+                    DEADLINE: deadline_temp,
+                    DISTANCE: distance_temp,
+                    FOCUS_TIME: focusTime_temp,
+                    NOT_FOCUS_TIME: notFocusTime_temp,
+                    PRIORITY: priority_temp,
+                }
+                
+                await axios.put(`${requests.fetchWeight}/weight`, modifiedWeight, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+            }
+        }
+
+        console.log("post", modifyPlans);
         try {
-            await axios.post(`${requests.fetchRecommend}`, recommendPlans.recommend, {
+            await axios.post(`${requests.fetchRecommend}`, modifyPlans, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -92,6 +149,28 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
         setNewScheduleModalOpen(false);
     };
 
+    const handleScheduleChange = (schedule) => {
+        setModifyPlans(schedule);
+    };
+
+    const findMatchingDictionary = (startTime, endTime) => {
+        for (const dayPlans of recommendPriority) {
+            for (const plan of dayPlans) {
+                const dateStart = new Date(startTime);
+                const dateEnd = new Date(endTime);
+                const planStart = new Date(plan.START_TIME);
+                const planEnd = new Date(plan.END_TIME);
+                if (plan && planStart <= dateStart && planEnd >= dateEnd) {
+                    // 딕셔너리가 일치하는 경우 출력
+                    console.log("correct:", plan);
+                    return plan;
+                }
+            }
+        }
+        // 딕셔너리를 찾지 못한 경우
+        console.log('Matching dictionary not found');
+    };
+
     return (
         <ViewContainer>
             <RootContainer>
@@ -104,8 +183,7 @@ const NewSchedule = ({ setNewScheduleModalOpen, days }) => {
                         />
                     </ModalTitle>
                     <InputList>
-                        {render && <CalendarLib mySleepInfo={mySleepInfo} scheduleData={recommendPlans} plans={plans}/>}
-                        {/* <ScheduleLib scheduleData={recommendPlans} days={days} sleepInfo={mySleepInfo}/> */}
+                        {render && <CalendarLib mySleepInfo={mySleepInfo} scheduleData={recommendPlans} plans={plans} onScheduleChange={handleScheduleChange}/>}
                     </InputList>
                     <InputList>
                         <SubmitButton onClick={handleSubmit}>

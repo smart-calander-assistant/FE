@@ -216,7 +216,7 @@ export default function Todoplan() {
                 />
             )}
             {/* {resultModalOpen && (<Result setResultModalOpen={setResultModalOpen} days={days}/>)} */}
-            {newScheduleModalOpen && (<NewSchedule setNewScheduleModalOpen={setNewScheduleModalOpen} days={days}/>)}
+            {newScheduleModalOpen && (<NewSchedule setNewScheduleModalOpen={setNewScheduleModalOpen} days={days} />)}
             <ContentWrapper active={showTodoList}>
                 {showTodoList
                     ? remainTodo
