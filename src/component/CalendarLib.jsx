@@ -63,7 +63,7 @@ const CalendarLib = ({
         calendarInstance.setOptions({
             week: {
                 startDayOfWeek: nextDay,
-                dayNames: ['월', '화', '수', '목', '금', '토', '일'],
+                dayNames: ['일', '월', '화', '수', '목', '금', '토'],
                 showNowIndicator: false, // 현재 시간선 표시
                 eventView: ['time'],
                 taskView: false,

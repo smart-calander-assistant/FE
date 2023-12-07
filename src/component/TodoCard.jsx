@@ -5,6 +5,7 @@ import {
     IoFlagSharp,
     IoEllipsisHorizontalSharp,
 } from 'react-icons/io5';
+import { AiTwotoneStar } from 'react-icons/ai';
 import useOnClickOutside from '../hooks/useOnClickOutside';
 import EditTodo from '../mordal/EditTodo';
 import BorderLine from './BorderLine';
@@ -109,19 +110,29 @@ const TodoCard = ({
             </HeaderBox>
             <ContentBox>
                 <TitleBox>
-                    <IoListCircleOutline
-                        isCompleted={isCompleted}
-                        size={'1.5rem'}
-                        color={isCompleted ? '#8572FF' : '#DE496E'}
-                    />
-                    <p>{title}</p>
+                    <NameBox>
+                        <IoListCircleOutline
+                            isCompleted={isCompleted}
+                            size={'1.5rem'}
+                            color={isCompleted ? '#8572FF' : '#DE496E'}
+                        />
+                        <p>{title}</p>
+                    </NameBox>
+                    <Priority2Box>
+                        {Array.from({ length: priority }, (_, index) => (
+                            <AiTwotoneStar
+                                size={'1rem'}
+                                style={{color: '#FFBE0B', gap: 'orem !important'}}
+                            />
+                        ))}
+                    </Priority2Box>
                 </TitleBox>
                 <PlaceBox>{place === '' ? '' : <p>장소 : {place}</p>}</PlaceBox>
                 <BorderLine />
                 <TimeContainer>
                     <TypeBox>
-                    <p>카테고리 : {category}</p>
-                </TypeBox>
+                        <p>카테고리 : {category}</p>
+                    </TypeBox>
                     {isCompleted && <p> </p>}
                     <TimeBox>
                         <p>마감기한 : {deadline}</p>
@@ -175,6 +186,13 @@ const PriorityBox = styled.div`
     font-size: smaller;
 `;
 
+const Priority2Box = styled.div`
+    display: flex;
+    align-items: center;
+    margin: 0 0.5rem;
+    font-size: smaller;
+`;
+
 const Menu = styled.div`
     position: relative;
     color: black;
@@ -200,9 +218,14 @@ const ContentBox = styled.div`
 const TitleBox = styled.div`
     display: flex;
     align-items: center;
+    justify-content: space-between;
+`;
+
+const NameBox = styled.div`
+    display: flex;
+    align-items: center;
     margin: 0.5rem;
     gap: 0.5rem;
-
     font-size: large;
 `;
 

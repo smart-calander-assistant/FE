@@ -9,6 +9,8 @@ const TransfortationContent = ({
     start_time,
     end_time,
     time_list,
+    origin,
+    destination,
 }) => {
     const [transInfoModalOpen, setTransInfoModalOpen] = useState(false);
 
@@ -19,14 +21,17 @@ const TransfortationContent = ({
     const start_minutes = start_date.getMinutes();
     const end_minutes = end_date.getMinutes();
 
-    const formattedStartHours = start_hours < 10 ? `0${start_hours}` : start_hours;
-    const formattedStartMinutes = start_minutes < 10 ? `0${start_minutes}` : start_minutes;
+    const formattedStartHours =
+        start_hours < 10 ? `0${start_hours}` : start_hours;
+    const formattedStartMinutes =
+        start_minutes < 10 ? `0${start_minutes}` : start_minutes;
     const formattedEndHours = end_hours < 10 ? `0${end_hours}` : end_hours;
-    const formattedEndMinutes = end_minutes < 10 ? `0${end_minutes}` : end_minutes;
+    const formattedEndMinutes =
+        end_minutes < 10 ? `0${end_minutes}` : end_minutes;
 
     const startTime = formattedStartHours + ':' + formattedStartMinutes;
     const endTime = formattedEndHours + ':' + formattedEndMinutes;
-    
+
     const handleClick = () => {
         setTransInfoModalOpen(true);
     };
@@ -39,8 +44,10 @@ const TransfortationContent = ({
                 <TimeSlot>{endTime}</TimeSlot>
             </TimeContainer>
             <ScheduleContainer onClick={handleClick}>
+                <MinuteBox>총 {time}분 소요 예정</MinuteBox>
                 <TitleBox>
-                    <p>총 {time}분 소요 예정</p>
+                    <p>출발 : {origin}</p>
+                    <p>도착 : {destination}</p>
                 </TitleBox>
             </ScheduleContainer>
             {transInfoModalOpen && (
@@ -60,26 +67,33 @@ const RootContainer = styled.div`
     display: flex;
     /* width: 100%; */
     /* height: ${(props) => props.height / 30}rem; */
-    margin: 1rem;
+    margin: 0.5rem;
     /* margin-bottom: ${(props) => props.margin / 60}rem; */
 `;
 
 const ScheduleContainer = styled.button`
     display: flex;
+    flex-direction: column;
     flex: 1;
     margin: 0.25rem;
     padding: 1rem;
     border-radius: 1rem;
     background-color: #ffbe0b;
     border: none;
+    gap: 0.5rem;
 `;
 
-const TitleBox = styled.p`
+const MinuteBox = styled.p`
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+    font-size: large;
+`;
+const TitleBox = styled.div`
     display: flex;
     flex-direction: column;
-    font-weight: 600;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
 `;
 
 const TimeContainer = styled.div`

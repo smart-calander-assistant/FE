@@ -46,9 +46,9 @@ const RootContainer = styled.div`
 const ScheduleContainer = styled.div`
     display: flex;
     flex: 1;
-    background-color: #de496e;
+    background-color: #de496e;  
     color: white;
-    margin: 0 1rem;
+    margin: 0 1rem 0 0;
     padding: 1rem;
     border-radius: 1rem;
     gap: 1rem;

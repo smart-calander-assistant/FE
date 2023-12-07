@@ -183,6 +183,8 @@ export default function Schedule() {
                                     time_list={item.total_time_list}
                                     start_time={item.departure_time}
                                     end_time={item.arrival_time}
+                                    origin={item.origin}
+                                    destination={item.destination}
                                 />
                             ) : (
                                 ((null_cnt += 1), null)

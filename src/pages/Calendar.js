@@ -152,6 +152,7 @@ export default function Calendar() {
                         end_time={plan.endTime}
                         place={plan.place}
                         title={plan.content}
+                        category={plan.category}
                         onEdit={handleEditPlan}
                         onDelete={handleDeletePlan}
                         onChange={handleChange}
