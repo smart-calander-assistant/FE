@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
-import axios from '../api/axios';
-import requests from '../api/requests';
-import { getAccessToken } from '../localstorage/auth';
 import Swal from 'sweetalert2';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
@@ -11,12 +8,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import SelectContent from '../component/SelectContent';
 
-const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, setResultModalOpen, setDays, days }) => {
+const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, setDays, days }) => {
     const [startTimeInput, setStartTimeInput] = useState(
         new Date().setDate(new Date().getDate() + 1)
     );
-
-    const accessToken = getAccessToken();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,13 +24,6 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, set
 
             console.log('newRecommend:', newRecommend);
 
-            // Axios를 사용하여 POST 요청을 보냅니다.
-            // await axios.post(requests.fetchPlan, newRecommend, {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`, // accessToken을 헤더에 추가
-            //     },
-            // });
-
             // 입력값 초기화
             setStartTimeInput('');
 
@@ -46,8 +34,8 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, set
             let timerInterval;
             Swal.fire({
                 title: '일정을 생성중입니다...',
-                html: '<b></b>ns만큼 기다려주세요',
-                timer: 7000,
+                html: '<b></b>만큼 기다려주세요',
+                timer: 10000,
                 timerProgressBar: true,
                 didOpen: () => {
                     Swal.showLoading();
@@ -86,7 +74,7 @@ const ScheduleRecommend = ({ setRecommendModalOpen, setNewScheduleModalOpen, set
             <RootContainer>
                 <ModalContainer>
                     <ModalTitle>
-                        <ModalDetail>AI일정 추천 설정</ModalDetail>
+                        <ModalDetail>일정 추천 설정</ModalDetail>
                         <IoClose
                             size={'2rem'}
                             onClick={() => setRecommendModalOpen(false)}

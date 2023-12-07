@@ -209,13 +209,11 @@ export default function Todoplan() {
             {recommendModalOpen && (
                 <ScheduleRecommend
                     setRecommendModalOpen={setRecommendModalOpen}
-                    // setResultModalOpen={setResultModalOpen}
                     setNewScheduleModalOpen={setNewScheduleModalOpen}
                     setDays={setDays}
                     days={days}
                 />
             )}
-            {/* {resultModalOpen && (<Result setResultModalOpen={setResultModalOpen} days={days}/>)} */}
             {newScheduleModalOpen && (<NewSchedule setNewScheduleModalOpen={setNewScheduleModalOpen} days={days} />)}
             <ContentWrapper active={showTodoList}>
                 {showTodoList

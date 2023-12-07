@@ -135,16 +135,6 @@ const CalendarLib = ({
             // 업데이트된 scheduleData를 state로 설정
             setChangedSchedule(updatedScheduleData);
             onScheduleChange(updatedScheduleData);
-
-            // 여기서 수정된 정보를 활용하여 업데이트 등을 수행할 수 있음
-            // 예: 서버에 수정된 정보를 전송하고, 상태를 업데이트하는 등의 작업
-            // axios.post('/api/updateEvent', { eventId: event.id, changes })
-            //     .then(response => {
-            //         console.log('Event updated successfully:', response.data);
-            //     })
-            //     .catch(error => {
-            //         console.error('Error updating event:', error);
-            //     });
         };
 
         const calendarInstance = calendarRef.current.getInstance();
