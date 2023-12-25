@@ -16,9 +16,8 @@
 
 ## 🎨 프로젝트 데모
 
-https://github.com/plan-assistant/FE/assets/48922050/d18babd4-4bd9-4894-a98e-86af0143bea4
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/9d5d4016-df38-4eb4-a4e4-7aa140403165/Untitled.png)
+![Untitled (13)](https://github.com/plan-assistant/FE/assets/48922050/d6526996-8097-439e-a8ff-5fe8c1df8661)
+![Untitled (1)](https://github.com/plan-assistant/FE/assets/48922050/7dcd800f-b7ae-4228-bd22-003e07778ece)
 
 - 로그인화면과 캘린더화면
     - 캘린더 화면에서 날짜 선택시에 그 날에 해당하는 Plan을 확인할 수 있음
