@@ -18,20 +18,15 @@
 
 ![Untitled (13)](https://github.com/plan-assistant/FE/assets/48922050/d6526996-8097-439e-a8ff-5fe8c1df8661)
 ![Untitled (1)](https://github.com/plan-assistant/FE/assets/48922050/7dcd800f-b7ae-4228-bd22-003e07778ece)
-
 - 로그인화면과 캘린더화면
     - 캘린더 화면에서 날짜 선택시에 그 날에 해당하는 Plan을 확인할 수 있음
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/fd79b604-10f8-43d7-857a-354b9cc5cf18/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/42affafc-4fca-465c-83c5-471e3a1508e3/Untitled.png)
-
+![Untitled (2)](https://github.com/plan-assistant/FE/assets/48922050/92bac8bb-0a32-400d-a747-2a88144cb9b2)
+![Untitled (3)](https://github.com/plan-assistant/FE/assets/48922050/ddc57313-8884-43a9-afe7-97cd2a4bf4ab)
 - TodoList와 PlannedList페이지
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/1cdae452-42fa-442d-972d-bffe394866f3/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/d8173677-8c9b-4ae7-912f-c7f878810ba4/Untitled.png)
-
+![Untitled (4)](https://github.com/plan-assistant/FE/assets/48922050/5aceae63-6c2a-4557-9f6b-670d1d4e68e0)
+![Untitled (5)](https://github.com/plan-assistant/FE/assets/48922050/d575e518-7aa5-4435-8b6a-65db2512278b)
 - 일정 추가 모달
     - Todo 추가에서는 제목, 마감기한, 중요도, 카테고리, 장소를 입력받는다
     - Plan 추가에서는 제목, 시작날짜, 종료날짜, 카테고리, 장소를 입력받는다
@@ -39,31 +34,22 @@
     - 장소값은 구글지도API를 통해서 장소값을 받아옴
     - 수정, 삭제, 작업완료 등의 기능도 구
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/3680ef57-ea0f-42f0-a52f-54cac11edebd/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/4950cefd-00d8-4287-9f9b-add2371083ca/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/ce06515e-01de-4825-8286-f5c856c692ea/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/9f15f273-10aa-449b-a8c1-95702da7c9c9/Untitled.png)
-
+![Untitled (6)](https://github.com/plan-assistant/FE/assets/48922050/8d4b5691-81e1-4875-81c6-257e43783e53)
+![Untitled (7)](https://github.com/plan-assistant/FE/assets/48922050/e4cff175-1fbf-4318-abcc-c53576d9df7d)
+![Untitled (8)](https://github.com/plan-assistant/FE/assets/48922050/ae8a8f3c-f7e3-4306-bfba-9f0566b2e299)
+![Untitled (9)](https://github.com/plan-assistant/FE/assets/48922050/4bab9b08-5dca-4204-928e-a22ae631b9e1)
 - 설정페이지
     - 일정 현황, 내 정보, AI 일정추천 우선순위, 일정기록 초기화, 로그아웃, 회원탈퇴 등의 기능
     - 우선순위는 0.3, 0.25, 0.2, 0.15, 0.1로 초기화한 후에 일정 추천을 받아서 일정을 수정하게 되면 자동으로 가중치가 변경
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/c574b95f-9f42-417f-aa64-72436c986684/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/adbc0294-7454-43c9-b81e-2fbd4fc9a5b5/Untitled.png)
-
+![Untitled (10)](https://github.com/plan-assistant/FE/assets/48922050/7a3ceb90-f867-46b4-8f18-59b507ccfaea)
+![Untitled (11)](https://github.com/plan-assistant/FE/assets/48922050/0f280717-3c73-4d3d-b560-a4b27b465bf5)
 - 일정 추천 모달
     - 3일 ~ 7일까지 일정을 추천받을 수 있음
     - 다음과 같이 Plan과 Todo를 통해서 일정을 추천
     - 원하는 일정을 시간표에서 직접 위치를 드래그로 옮겨서 저장가
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/c19bf6e6-5005-4773-9c33-1a0bd0ef8548/Untitled.png)
-
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/5332b80c-ea37-4675-8e70-95c166faa2e7/e832bded-2eb9-49e7-b4ff-1e65eec62e02/Untitled.png)
-
+![Untitled (12)](https://github.com/plan-assistant/FE/assets/48922050/bf1e3fee-f885-4aae-8ff7-7e157742f19b)
 - 일정 확인
     - 추천받은 일정 및 현재 존재하는 일정들을 통합하여 일정을 확인할 수 있음
     - 교통정보도 확인가능
